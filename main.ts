@@ -1,235 +1,222 @@
-type Point = { x: number; y: number };
+class GardenPlanner {
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private gardenPath: { x: number, y: number }[] = [];
+    private plants: { x: number, y: number, type: string }[] = [];
+    private pots: { x: number, y: number }[] = [];
+    private gridSize: number = 20; // Grid size
+    private currentLineStart: { x: number, y: number } | null = null;
+    private currentTool: string = 'draw'; // Default tool is draw
 
-type Plant = Point & {
-    type: string;
-    waterNeeds: string;
-    sunlight: string;
-    spacing: number;
-};
+    constructor(canvasId: string) {
+        this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+        this.ctx = this.canvas.getContext('2d')!;
+        this.setupCanvas();
+        this.addEventListeners();
+    }
 
-type PlantPot = Point;
+    private setupCanvas() {
+        this.canvas.width = 1200;
+        this.canvas.height = 800;
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = '#000';
+        this.ctx.lineJoin = 'round';
+    }
 
-const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d")!;
-const gridSize = 20;
+    private addEventListeners() {
+        this.canvas.addEventListener('mousedown', this.startDrawing.bind(this));
+        this.canvas.addEventListener('mousemove', this.draw.bind(this));
+        this.canvas.addEventListener('mouseup', this.stopDrawing.bind(this));
+    }
 
-let mode: "draw" | "pot" | "plant" = "draw";
-let isDrawing = false;
-let isGardenLocked = false;
-let gardenPath = new Path2D();
-let gardenPathData: Point[] = [];
+    private startDrawing(event: MouseEvent) {
+        const mousePos = this.getMousePosition(event);
+        if (this.currentTool === 'draw') {
+            this.currentLineStart = this.snapToGrid(mousePos);
+            this.gardenPath.push(this.currentLineStart);
+        } else if (this.currentTool === 'plant') {
+            this.addPlant(mousePos.x, mousePos.y, 'Rose');
+        } else if (this.currentTool === 'pot') {
+            this.addPot(mousePos.x, mousePos.y);
+        }
+    }
 
-const plantPots: PlantPot[] = [];
-const plants: Plant[] = [];
+    private draw(event: MouseEvent) {
+        if (!this.currentLineStart) return;
 
-let hoveredPlant: Plant | null = null;
+        const mousePos = this.getMousePosition(event);
+        const snappedPos = this.snapToGrid(mousePos);
 
-function setMode(newMode: typeof mode) {
-    mode = newMode;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear canvas for redrawing
+        this.redraw();
+        
+        // Draw the current line being drawn
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.currentLineStart.x, this.currentLineStart.y);
+        this.ctx.lineTo(snappedPos.x, snappedPos.y);
+        this.ctx.stroke();
+    }
+
+    private stopDrawing(event: MouseEvent) {
+        if (!this.currentLineStart) return;
+
+        const mousePos = this.getMousePosition(event);
+        const snappedPos = this.snapToGrid(mousePos);
+
+        this.gardenPath.push(snappedPos);
+        this.currentLineStart = null;
+    }
+
+    private getMousePosition(event: MouseEvent): { x: number, y: number } {
+        const rect = this.canvas.getBoundingClientRect();
+        return {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+    }
+
+    private snapToGrid(position: { x: number, y: number }): { x: number, y: number } {
+        return {
+            x: Math.round(position.x / this.gridSize) * this.gridSize,
+            y: Math.round(position.y / this.gridSize) * this.gridSize,
+        };
+    }
+
+    private redraw() {
+        this.drawGrid();   // Draw the grid first
+        this.drawGarden();
+        this.drawPlants();
+        this.drawPots();
+    }
+
+    // Method to draw the grid
+    private drawGrid() {
+        const gridColor = '#ddd';
+        const gridLineWidth = 0.5;
+
+        // Draw vertical lines
+        for (let x = 0; x < this.canvas.width; x += this.gridSize) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, 0);
+            this.ctx.lineTo(x, this.canvas.height);
+            this.ctx.strokeStyle = gridColor;
+            this.ctx.lineWidth = gridLineWidth;
+            this.ctx.stroke();
+        }
+
+        // Draw horizontal lines
+        for (let y = 0; y < this.canvas.height; y += this.gridSize) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, y);
+            this.ctx.lineTo(this.canvas.width, y);
+            this.ctx.strokeStyle = gridColor;
+            this.ctx.lineWidth = gridLineWidth;
+            this.ctx.stroke();
+        }
+    }
+
+    private drawGarden() {
+        if (this.gardenPath.length < 2) return;
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.gardenPath[0].x, this.gardenPath[0].y);
+
+        for (let i = 1; i < this.gardenPath.length; i++) {
+            this.ctx.lineTo(this.gardenPath[i].x, this.gardenPath[i].y);
+        }
+
+        this.ctx.closePath();
+        this.ctx.stroke();
+    }
+
+    private drawPlants() {
+        this.plants.forEach(plant => {
+            this.ctx.beginPath();
+            this.ctx.arc(plant.x, plant.y, 10, 0, 2 * Math.PI); // Drawing the plant as a circle
+            this.ctx.fillStyle = 'green';
+            this.ctx.fill();
+            this.ctx.strokeStyle = 'black';
+            this.ctx.stroke();
+        });
+    }
+
+    private drawPots() {
+        this.pots.forEach(pot => {
+            this.ctx.beginPath();
+            this.ctx.rect(pot.x - 10, pot.y - 10, 20, 20); // Drawing the pot as a square
+            this.ctx.fillStyle = 'brown';
+            this.ctx.fill();
+            this.ctx.strokeStyle = 'black';
+            this.ctx.stroke();
+        });
+    }
+
+    // Method to add a plant at specific coordinates
+    addPlant(x: number, y: number, type: string) {
+        this.plants.push({ x, y, type });
+        this.redraw();
+    }
+
+    // Method to add a pot at specific coordinates
+    addPot(x: number, y: number) {
+        this.pots.push({ x, y });
+        this.redraw();
+    }
+
+    // Method to save the garden layout
+    saveGarden() {
+        const gardenData = {
+            gardenPath: this.gardenPath,
+            plants: this.plants,
+            pots: this.pots,
+        };
+        localStorage.setItem('gardenLayout', JSON.stringify(gardenData));
+    }
+
+    // Method to load the garden layout from localStorage
+    loadGarden(event: Event) {
+        const fileInput = event.target as HTMLInputElement;
+        if (fileInput.files?.length) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const gardenData = JSON.parse(e.target?.result as string);
+                this.gardenPath = gardenData.gardenPath;
+                this.plants = gardenData.plants;
+                this.pots = gardenData.pots;
+                this.redraw();
+            };
+            reader.readAsText(file);
+        }
+    }
+
+    // Method to set the current mode (tool)
+    setMode(tool: string) {
+        this.currentTool = tool;
+    }
+
+    // Lock the garden (disable drawing)
+    lockGarden() {
+        this.currentTool = 'locked';
+    }
+}
+
+// Initialize garden planner
+const gardenPlanner = new GardenPlanner('canvas');
+
+// Event listeners for the toolbar buttons
+function setMode(tool: string) {
+    gardenPlanner.setMode(tool);
 }
 
 function lockGarden() {
-    isGardenLocked = true;
-}
-
-canvas.addEventListener("mousedown", (e: MouseEvent) => {
-    const x = Math.floor(e.offsetX / gridSize) * gridSize + gridSize / 2;
-    const y = Math.floor(e.offsetY / gridSize) * gridSize + gridSize / 2;
-
-    if (mode === "draw" && !isGardenLocked) {
-        isDrawing = true;
-        gardenPath.moveTo(e.offsetX, e.offsetY);
-        gardenPathData.push({ x: e.offsetX, y: e.offsetY });
-    } else if (isGardenLocked) {
-        if (mode === "pot" && ctx.isPointInPath(gardenPath, x, y)) {
-            plantPots.push({ x, y });
-            redraw();
-        } else if (mode === "plant" && ctx.isPointInPath(gardenPath, x, y)) {
-            plants.push({ x, y, type: "", waterNeeds: "", sunlight: "", spacing: 30 });
-            redraw();
-        }
-    }
-});
-
-canvas.addEventListener("mousemove", (e: MouseEvent) => {
-    hoveredPlant = null;
-    for (const plant of plants) {
-        const dx = plant.x - e.offsetX;
-        const dy = plant.y - e.offsetY;
-        if (Math.sqrt(dx * dx + dy * dy) < 10) {
-            hoveredPlant = plant;
-            break;
-        }
-    }
-
-    if (mode === "draw" && isDrawing && !isGardenLocked) {
-        gardenPath.lineTo(e.offsetX, e.offsetY);
-        gardenPathData.push({ x: e.offsetX, y: e.offsetY });
-    }
-
-    redraw();
-});
-
-canvas.addEventListener("mouseup", () => {
-    isDrawing = false;
-});
-
-canvas.addEventListener("click", (e: MouseEvent) => {
-    if (mode !== "plant") return;
-
-    const clickX = e.offsetX;
-    const clickY = e.offsetY;
-
-    for (const plant of plants) {
-        const dx = plant.x - clickX;
-        const dy = plant.y - clickY;
-        if (Math.sqrt(dx * dx + dy * dy) < 10) {
-            const type = prompt("Plant type:", plant.type) ?? plant.type;
-            const waterNeeds = prompt("Water needs (Daily, Moderate, Low):", plant.waterNeeds) ?? plant.waterNeeds;
-            const sunlight = prompt("Sunlight (Full Sun, Partial, Shade):", plant.sunlight) ?? plant.sunlight;
-            const spacing = parseInt(prompt("Spacing in cm:", String(plant.spacing)) ?? String(plant.spacing), 10);
-
-            plant.type = type;
-            plant.waterNeeds = waterNeeds;
-            plant.sunlight = sunlight;
-            plant.spacing = spacing;
-            redraw();
-            break;
-        }
-    }
-});
-
-function drawGrid() {
-    ctx.strokeStyle = "#eee";
-    for (let x = 0; x < canvas.width; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
-    }
-    for (let y = 0; y < canvas.height; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
-    }
-}
-
-function getViolations(): Set<Plant> {
-    const violating = new Set<Plant>();
-    for (let i = 0; i < plants.length; i++) {
-        for (let j = i + 1; j < plants.length; j++) {
-            const a = plants[i];
-            const b = plants[j];
-            const dx = a.x - b.x;
-            const dy = a.y - b.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const minSpacing = Math.min(a.spacing, b.spacing);
-            if (dist < minSpacing) {
-                violating.add(a);
-                violating.add(b);
-            }
-        }
-    }
-    return violating;
-}
-
-function redraw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGrid();
-
-    ctx.strokeStyle = "#228B22";
-    ctx.lineWidth = 2;
-    ctx.stroke(gardenPath);
-
-    // Draw pots
-    plantPots.forEach(pot => {
-        ctx.fillStyle = "#964B00";
-        ctx.beginPath();
-        ctx.arc(pot.x, pot.y, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "#333";
-        ctx.stroke();
-    });
-
-    const violations = getViolations();
-
-    // Draw plants
-    plants.forEach(plant => {
-        if (plant === hoveredPlant) {
-            ctx.strokeStyle = "rgba(0,0,0,0.2)";
-            ctx.beginPath();
-            ctx.arc(plant.x, plant.y, plant.spacing, 0, Math.PI * 2);
-            ctx.stroke();
-        }
-
-        ctx.fillStyle = "#32CD32";
-        ctx.beginPath();
-        ctx.arc(plant.x, plant.y, 8, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = violations.has(plant) ? "red" : "#006400";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        if (plant === hoveredPlant) {
-            const info = `🌱 ${plant.type}
-💧 ${plant.waterNeeds}
-☀️ ${plant.sunlight}
-📏 ${plant.spacing} cm` +
-                (violations.has(plant) ? "\n⚠️ Too close!" : "");
-
-            const lines = info.split("\n");
-            const boxX = plant.x + 15;
-            const boxY = plant.y - 10;
-
-            ctx.fillStyle = "#fff";
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.rect(boxX, boxY, 150, lines.length * 16 + 8);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = "#000";
-            ctx.font = "12px sans-serif";
-            lines.forEach((line, i) => {
-                ctx.fillText(line, boxX + 6, boxY + 18 + i * 14);
-            });
-        }
-    });
+    gardenPlanner.lockGarden();
 }
 
 function saveGarden() {
-    const data = {
-        gardenPathData,
-        plantPots,
-        plants
-    };
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "my-garden.json";
-    a.click();
+    gardenPlanner.saveGarden();
 }
 
 function loadGarden(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        const json = reader.result as string;
-        const data = JSON.parse(json);
-
-        gardenPathData = data.gardenPathData || [];
-        plantPots.length = 0;
-        plantPots.push(...(data.plantPots || []));
-        plants.length = 0;
-        plants.push(...(data.plants || []));
-        gardenPath = new Path2D();
-        redraw();
-    };
-    reader.readAsText(file);
+    gardenPlanner.loadGarden(event);
 }
