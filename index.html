@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Garden Planner</title>
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    .toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: #f4f4f4;
+      padding: 10px;
+      z-index: 10;
+    }
+    canvas { display: block; margin-top: 60px; }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="setMode('draw')">Draw Garden</button>
+  <button onclick="lockGarden()">Lock Garden</button>
+  <button onclick="setMode('pot')">Place Pot</button>
+  <button onclick="setMode('plant')">Place Plant</button>
+  <button onclick="saveGarden()">Save</button>
+  <input type="file" id="loadFile" onchange="loadGarden(event)" />
+</div>
+
+<canvas id="canvas" width="1200" height="800"></canvas>
+
+<script src="main.js"></script>
+</body>
+</html>

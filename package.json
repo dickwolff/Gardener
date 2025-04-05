@@ -1,0 +1,24 @@
+{
+  "name": "gardener",
+  "version": "1.0.0",
+  "description": "A tool to keep track of the fauna in your garden.",
+  "main": "main.js",
+  "scripts": {
+    "build": "tsc main.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dickwolff/Gardener.git"
+  },
+  "author": "Dick Wolff",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dickwolff/Gardener/issues"
+  },
+  "homepage": "https://github.com/dickwolff/Gardener#readme",
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "^5.8.3"
+  }
+}
