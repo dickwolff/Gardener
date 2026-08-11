@@ -292,7 +292,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   }
 
   function zoomOut() {
-    setZoom((z) => Math.max(0.5, z / 1.3));
+    setZoom((z) => Math.max(0.1, z / 1.3));
   }
 
   function resetView() {
@@ -540,7 +540,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                         points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
                         fill="none"
                         stroke="#ECBA82"
-                        strokeWidth={0.06}
+                        strokeWidth={0.015}
                         strokeDasharray="0.15 0.1"
                       />
                       {pts.map((p, i) => (
@@ -551,7 +551,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                           r={0.12}
                           fill="#ECBA82"
                           stroke="#FFFFFF"
-                          strokeWidth={0.03}
+                          strokeWidth={0.015}
                           style={{ cursor: "pointer" }}
                         />
                       ))}
@@ -561,7 +561,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                     points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
                     fill={colors.fill}
                     stroke={colors.stroke}
-                    strokeWidth={0.04}
+                    strokeWidth={0.005}
                     opacity={0.7}
                   />
                   {renderZonePattern(z.type, pts)}
@@ -588,7 +588,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                   r={0.12}
                   fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
                   stroke="#FFFFFF"
-                  strokeWidth={0.03}
+                  strokeWidth={0.015}
                 />
                 <text
                   x={p.x}
@@ -608,7 +608,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                 points={drawingPoints.map((p) => `${p.x},${p.y}`).join(" ")}
                 fill="none"
                 stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-                strokeWidth={tool === "boundary" ? 0.08 : 0.06}
+                strokeWidth={tool === "boundary" ? 0.04 : 0.03}
                 strokeDasharray={tool === "boundary" ? "none" : "0.15 0.1"}
               />
             )}
@@ -621,7 +621,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                   x2={mousePos.x}
                   y2={mousePos.y}
                   stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-                  strokeWidth={0.04}
+                  strokeWidth={0.005}
                   strokeDasharray="0.1 0.1"
                   opacity={0.5}
                 />
@@ -895,7 +895,7 @@ function renderGrid(
         x2={x}
         y2={vy + vh + margin}
         stroke="#E9E6E6"
-        strokeWidth={Math.round(x * 100) % 100 === 0 ? 0.02 : 0.01}
+        strokeWidth={Math.round(x * 100) % 100 === 0 ? 0.01 : 0.005}
       />
     );
   }
@@ -909,7 +909,7 @@ function renderGrid(
         x2={vx + vw + margin}
         y2={y}
         stroke="#E9E6E6"
-        strokeWidth={Math.round(y * 100) % 100 === 0 ? 0.02 : 0.01}
+        strokeWidth={Math.round(y * 100) % 100 === 0 ? 0.01 : 0.005}
       />
     );
   }
@@ -935,7 +935,7 @@ function renderZonePattern(type: string, points: Point[]) {
           x2={centerX - dx + (i % 3) * 0.2 - 0.2 + 0.1}
           y2={centerY - dy - 0.15}
           stroke="#81C784"
-          strokeWidth={0.02}
+          strokeWidth={0.005}
           opacity={0.6}
         />
       );
@@ -954,7 +954,7 @@ function renderZonePattern(type: string, points: Point[]) {
           x2={points[0].x + i * 0.4 + 0.3}
           y2={points[0].y + 0.3}
           stroke="#BDBDBD"
-          strokeWidth={0.02}
+          strokeWidth={0.005}
           opacity={0.5}
         />
       );
@@ -979,7 +979,7 @@ function renderZonePattern(type: string, points: Point[]) {
           x2={x}
           y2={maxY}
           stroke="#8B5A2B"
-          strokeWidth={0.04}
+          strokeWidth={0.005}
           opacity={0.7}
           strokeDasharray="0.15 0.08"
         />
@@ -995,7 +995,7 @@ function renderZonePattern(type: string, points: Point[]) {
           x2={maxX}
           y2={y}
           stroke="#8B5A2B"
-          strokeWidth={0.06}
+          strokeWidth={0.015}
           opacity={0.7}
         />
       );
