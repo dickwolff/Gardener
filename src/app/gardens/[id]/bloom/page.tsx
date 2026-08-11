@@ -104,35 +104,40 @@ export default async function BloomPage({ params }: BloomPageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-end gap-1 h-32 mb-2">
+                <div className="flex items-end gap-2 h-56 mb-3">
                   {density.map((count, i) => (
                     <div
                       key={i}
-                      className="flex-1 flex flex-col items-center group relative"
+                      className="flex-1 flex flex-col items-center justify-end min-w-0"
                     >
-                      <span className="text-xs text-muted-foreground mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {count}
+                      <span className={`text-sm font-semibold mb-1.5 ${count > 0 ? "text-[#2E2E2E]" : "text-muted-foreground/30"}`}>
+                        {count || ""}
                       </span>
                       <div
-                        className={`w-full rounded-t-md transition-all ${
-                          gapMonths.includes(i + 1)
-                            ? "bg-amber-200"
-                            : "bg-[#4A7C59]"
+                        className={`w-full rounded-t-lg ${
+                          count === 0 && gapMonths.includes(i + 1)
+                            ? "bg-amber-200 border-2 border-amber-300"
+                            : count > 0
+                              ? "bg-emerald-400"
+                              : "bg-muted/50"
                         }`}
                         style={{
-                          height: `${Math.max((count / maxDensity) * 100, 4)}%`,
+                          height: count > 0
+                            ? `${Math.max((count / maxDensity) * 100, 20)}%`
+                            : gapMonths.includes(i + 1) ? "8%" : "4%",
+                          minHeight: count > 0 ? "20px" : undefined,
                         }}
                       />
                     </div>
                   ))}
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-2">
                   {density.map((_, i) => (
                     <span
                       key={i}
-                      className={`flex-1 text-center text-xs ${
+                      className={`flex-1 text-center text-xs font-medium min-w-0 ${
                         gapMonths.includes(i + 1)
-                          ? "text-amber-600 font-medium"
+                          ? "text-amber-600"
                           : "text-muted-foreground"
                       }`}
                     >
