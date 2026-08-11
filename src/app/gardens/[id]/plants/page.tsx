@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { parseBloomMonths, monthLabel } from "@/lib/bloom";
+import { SunlightEditor } from "@/components/sunlight-editor";
+import { Sun, CloudSun, Cloud, CircleHelp } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -91,12 +93,13 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {plant.sunlight && (
-                      <Badge variant="secondary" className="rounded-xl">
-                        {plant.sunlight}
-                      </Badge>
-                    )}
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <SunlightEditor plantId={plant.id} plantName={plant.name} currentSunlight={plant.sunlight}>
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 rounded-xl">
+                        {plant.sunlight === "full_sun" ? <Sun className="w-4 h-4" /> : plant.sunlight === "partial_shade" ? <CloudSun className="w-4 h-4" /> : plant.sunlight === "full_shade" ? <Cloud className="w-4 h-4" /> : <CircleHelp className="w-4 h-4 text-muted-foreground" />}
+                        <span className="text-muted-foreground">{plant.sunlight === "full_sun" ? "Volle zon" : plant.sunlight === "partial_shade" ? "Half schaduw" : plant.sunlight === "full_shade" ? "Schaduw" : "Onbekend"}</span>
+                      </Button>
+                    </SunlightEditor>
                     {plant.watering && (
                       <Badge variant="secondary" className="rounded-xl">
                         {plant.watering}

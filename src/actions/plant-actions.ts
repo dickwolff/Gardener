@@ -67,6 +67,17 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
   return { success: true };
 }
 
+export async function updateSunlight(plantId: string, sunlight: string) {
+  const plant = await prisma.plant.update({
+    where: { id: plantId },
+    data: { sunlight },
+  });
+
+  revalidatePath(`/gardens/${plant.gardenId}/bloom`);
+  revalidatePath(`/gardens/${plant.gardenId}/plants`);
+  return { success: true };
+}
+
 export async function removePlant(id: string) {
   const plant = await prisma.plant.findUnique({ where: { id } });
   if (!plant) return { error: "Plant niet gevonden." };

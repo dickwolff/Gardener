@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,10 +16,10 @@ interface BloomMonthEditorProps {
   plantId: string;
   plantName: string;
   initialMonths?: number[];
-  label?: string;
+  children: ReactNode;
 }
 
-export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label }: BloomMonthEditorProps) {
+export function BloomMonthEditor({ plantId, plantName, initialMonths = [], children }: BloomMonthEditorProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number[]>([]);
@@ -50,14 +50,9 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        variant="outline"
-        size="sm"
-        className="rounded-xl border-2 border-input h-7 text-xs"
-        onClick={() => setOpen(true)}
-      >
-        {label || "Bloei instellen"}
-      </Button>
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex">
+        {children}
+      </button>
       <DialogContent className="rounded-2xl border-0 sm:max-w-xs">
         <DialogHeader>
           <DialogTitle

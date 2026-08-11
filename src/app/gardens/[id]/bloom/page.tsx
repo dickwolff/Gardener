@@ -4,6 +4,9 @@ import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BloomMonthEditor } from "@/components/bloom-month-editor";
+import { BloomBarClickable } from "@/components/bloom-bar-clickable";
+import { SunlightEditor } from "@/components/sunlight-editor";
+import { Sun, CloudSun, Cloud, CircleHelp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { refreshBloomData } from "@/actions/bloom-actions";
 import {
@@ -33,6 +36,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
     id: p.id,
     name: p.name,
     commonName: p.commonName,
+    sunlight: p.sunlight,
     bloomMonths: safeParseBloom(p.bloomTime),
   }));
 
@@ -199,31 +203,14 @@ export default async function BloomPage({ params }: BloomPageProps) {
                         </p>
                       )}
                     </div>
-                    <div className="flex-1 flex gap-1">
-                      {Array.from({ length: 12 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`flex-1 h-6 rounded-sm flex items-center justify-center text-[10px] leading-none ${
-                            plant.bloomMonths.includes(i + 1)
-                              ? "bg-[#4A7C59] text-white font-medium"
-                              : "bg-[#ECBA82]/20 text-muted-foreground"
-                          }`}
-                          title={
-                            plant.bloomMonths.includes(i + 1)
-                              ? `${monthLabel(i + 1)}: bloei`
-                              : `${monthLabel(i + 1)}: geen bloei`
-                          }
-                        >
-                          {monthLabel(i + 1)}
-                        </div>
-                      ))}
-                    </div>
-                    <BloomMonthEditor
-                      plantId={plant.id}
-                      plantName={plant.name}
-                      initialMonths={plant.bloomMonths}
-                      label="Bewerk"
-                    />
+                    <BloomMonthEditor plantId={plant.id} plantName={plant.name} initialMonths={plant.bloomMonths}>
+                      <BloomBarClickable months={plant.bloomMonths} />
+                    </BloomMonthEditor>
+                    <SunlightEditor plantId={plant.id} plantName={plant.name} currentSunlight={plant.sunlight}>
+                      <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                        {plant.sunlight === "full_sun" ? <Sun className="w-3.5 h-3.5" /> : plant.sunlight === "partial_shade" ? <CloudSun className="w-3.5 h-3.5" /> : plant.sunlight === "full_shade" ? <Cloud className="w-3.5 h-3.5" /> : <CircleHelp className="w-3.5 h-3.5" />}
+                      </span>
+                    </SunlightEditor>
                   </div>
                 ))}
               </CardContent>
@@ -249,7 +236,9 @@ export default async function BloomPage({ params }: BloomPageProps) {
                             <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
                           )}
                         </div>
-                        <BloomMonthEditor plantId={p.id} plantName={p.name} />
+                        <BloomMonthEditor plantId={p.id} plantName={p.name}>
+                          <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">Bloei instellen</Button>
+                        </BloomMonthEditor>
                       </div>
                     ))}
                   </div>
