@@ -104,30 +104,29 @@ export default async function BloomPage({ params }: BloomPageProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-end gap-2 h-56 mb-3">
+                <div className="flex gap-2 h-56 mb-3">
                   {density.map((count, i) => (
                     <div
                       key={i}
-                      className="flex-1 flex flex-col items-center justify-end min-w-0"
+                      className="flex-1 flex flex-col justify-end items-center min-w-0"
                     >
-                      <span className={`text-sm font-semibold mb-1.5 ${count > 0 ? "text-[#2E2E2E]" : "text-muted-foreground/30"}`}>
-                        {count || ""}
-                      </span>
                       <div
                         className={`w-full rounded-t-lg ${
                           count === 0 && gapMonths.includes(i + 1)
-                            ? "bg-amber-200 border-2 border-amber-300"
+                            ? "bg-[#ECBA82]/30 border-2 border-[#ECBA82]"
                             : count > 0
-                              ? "bg-emerald-400"
+                              ? "bg-[#4A7C59]"
                               : "bg-muted/50"
                         }`}
                         style={{
                           height: count > 0
-                            ? `${Math.max((count / maxDensity) * 100, 20)}%`
+                            ? `${Math.max((count / maxDensity) * 100, 15)}%`
                             : gapMonths.includes(i + 1) ? "8%" : "4%",
-                          minHeight: count > 0 ? "20px" : undefined,
                         }}
                       />
+                      <span className={`text-xs font-semibold mt-1.5 ${count > 0 ? "text-[#2E2E2E]" : "text-muted-foreground/30"}`}>
+                        {count || ""}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -137,7 +136,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
                       key={i}
                       className={`flex-1 text-center text-xs font-medium min-w-0 ${
                         gapMonths.includes(i + 1)
-                          ? "text-amber-600"
+                          ? "text-[#B8860B]"
                           : "text-muted-foreground"
                       }`}
                     >
@@ -149,10 +148,10 @@ export default async function BloomPage({ params }: BloomPageProps) {
             </Card>
 
             {gapMonths.length > 0 && (
-              <Card className="rounded-2xl border-2 border-amber-200 bg-amber-50/50">
+              <Card className="rounded-2xl border-2 border-[#ECBA82] bg-[#ECBA82]/10">
                 <CardContent className="py-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-amber-600 font-medium">
+                    <span className="text-[#8B6914] font-medium">
                       Bloei-gaten gevonden:
                     </span>
                     <span className="text-sm text-muted-foreground">
@@ -165,7 +164,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
             )}
 
             {gapMonths.length === 0 && bloomingPlants.length > 0 && (
-              <Card className="rounded-2xl border-2 border-[#4A7C59] bg-[#4A7C59]/5">
+              <Card className="rounded-2xl border-2 border-[#4A7C59] bg-[#4A7C59]/10">
                 <CardContent className="py-4">
                   <p className="text-[#4A7C59] font-medium">
                     Geen bloei-gaten! Het hele jaar door bloei in je tuin.
@@ -204,7 +203,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
                           className={`flex-1 h-6 rounded-sm flex items-center justify-center text-[10px] leading-none ${
                             plant.bloomMonths.includes(i + 1)
                               ? "bg-[#4A7C59] text-white font-medium"
-                              : "bg-muted text-muted-foreground"
+                              : "bg-[#ECBA82]/20 text-muted-foreground"
                           }`}
                           title={
                             plant.bloomMonths.includes(i + 1)
