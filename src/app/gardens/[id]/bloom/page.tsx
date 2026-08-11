@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { BloomMonthEditor } from "@/components/bloom-month-editor";
 import { Button } from "@/components/ui/button";
 import { refreshBloomData } from "@/actions/bloom-actions";
 import {
@@ -225,11 +225,17 @@ export default async function BloomPage({ params }: BloomPageProps) {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="space-y-2">
                     {plantsWithoutBloomData.map((p) => (
-                      <Badge key={p.id} variant="secondary" className="rounded-xl">
-                        {p.name}
-                      </Badge>
+                      <div key={p.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div>
+                          <p className="text-sm font-medium">{p.name}</p>
+                          {p.commonName && (
+                            <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
+                          )}
+                        </div>
+                        <BloomMonthEditor plantId={p.id} plantName={p.name} />
+                      </div>
                     ))}
                   </div>
                 </CardContent>
