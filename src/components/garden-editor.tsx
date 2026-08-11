@@ -514,7 +514,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         </div>
       </div>
 
-      <Card className="rounded-2xl border-0 overflow-hidden">
+      <Card className="rounded-2xl border-0 overflow-hidden py-0">
         <CardContent className="p-0">
           <svg
             ref={svgRef}
