@@ -122,6 +122,51 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     offsetRef.current = viewOffset;
   }, [viewOffset]);
 
+  useEffect(() => {
+    const allPoints: Point[] = [];
+
+    if (boundaryPoints.length > 0) {
+      allPoints.push(...boundaryPoints);
+    }
+    for (const z of zones) {
+      const pts = JSON.parse(z.points) as Point[];
+      allPoints.push(...pts);
+    }
+    for (const p of plants) {
+      allPoints.push({ x: p.x, y: p.y });
+    }
+
+    if (allPoints.length === 0) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const pt of allPoints) {
+      if (pt.x < minX) minX = pt.x;
+      if (pt.y < minY) minY = pt.y;
+      if (pt.x > maxX) maxX = pt.x;
+      if (pt.y > maxY) maxY = pt.y;
+    }
+
+    const pad = 1;
+    const contentW = maxX - minX + pad * 2;
+    const contentH = maxY - minY + pad * 2;
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
+    const viewW = garden.width;
+    const viewH = garden.height;
+
+    const fitZoom = Math.min(viewW / contentW, viewH / contentH, 2);
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    const newZoom = Math.round(fitZoom * 100) / 100;
+    const vw = viewW / newZoom;
+    const vh = viewH / newZoom;
+
+    setZoom(newZoom);
+    setViewOffset({ x: centerX - vw / 2, y: centerY - vh / 2 });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [dragState, setDragState] = useState<{
     vertexIndex: number;
     zoneId: string;
