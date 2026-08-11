@@ -48,7 +48,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-[1280px] w-full px-8 py-16">
+      <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
             <Link

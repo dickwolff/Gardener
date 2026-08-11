@@ -35,7 +35,7 @@ export default function NewGardenPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-[1280px] w-full px-8 py-16">
+      <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-16">
         <h1
           className="text-4xl text-[#2E2E2E] mb-8"
           style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
