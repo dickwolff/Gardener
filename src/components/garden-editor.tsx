@@ -80,7 +80,7 @@ const ZONE_COLORS: Record<string, { fill: string; stroke: string; label: string 
 
 const ZONE_TYPES = Object.keys(ZONE_COLORS) as ZoneType[];
 
-const GRID_SIZE = 0.25;
+const GRID_SIZE = 0.5;
 
 type Tool = "boundary" | "zone" | "plant" | "select" | "pan";
 
@@ -136,6 +136,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   const [plantPlacePosition, setPlantPlacePosition] = useState<Point | null>(null);
   const [plantDetailOpen, setPlantDetailOpen] = useState(false);
 
+  const [boundaryPoints, setBoundaryPoints] = useState<Point[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
 
   function getSvgCoords(e: React.MouseEvent<SVGSVGElement>): Point {
@@ -321,7 +322,8 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     setDrawingZoneId(null);
   }
 
-  async function finishBoundary() {
+  function finishBoundary() {
+    setBoundaryPoints([...drawingPoints]);
     setDrawingPoints([]);
   }
 
@@ -527,6 +529,15 @@ export function GardenEditor({ garden }: GardenEditorProps) {
             onWheel={handleWheel}
             style={{ background: "#F5F5F5" }}
           >
+            {boundaryPoints.length >= 3 && (
+              <polygon
+                points={boundaryPoints.map((p) => `${p.x},${p.y}`).join(" ")}
+                fill="#FFFFFF"
+                stroke="#2E2E2E"
+                strokeWidth={0.04}
+              />
+            )}
+
             {renderGrid(GRID_SIZE, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight)}
 
             {zones.map((z) => {
