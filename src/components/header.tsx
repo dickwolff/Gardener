@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { Square, LayoutGrid, Plus } from "lucide-react";
+import { SquareDot, LayoutGrid, Plus } from "lucide-react";
 
 export function Header() {
   return (
     <header className="bg-secondary text-secondary-foreground">
       <div className="mx-auto max-w-[1280px] px-8 py-8 flex items-center justify-between">
         <Link href="/" className="text-2xl tracking-tight flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
-          <Square className="w-6 h-6 fill-primary stroke-primary" strokeWidth={1.5} />
+          <SquareDot className="w-6 h-6 text-primary" strokeWidth={1.5} />
           Plot
         </Link>
         <nav className="flex gap-6 text-sm items-center" style={{ fontFamily: "var(--font-sans)" }}>
