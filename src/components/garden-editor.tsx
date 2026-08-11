@@ -32,6 +32,7 @@ import {
 } from "@/actions/plant-actions";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, RotateCcw } from "lucide-react";
+import { safeParseBloom } from "@/lib/bloom";
 
 type Point = { x: number; y: number };
 
@@ -406,7 +407,8 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const trefleGrowth = extractTrefleGrowth(detail);
     const watering = trefleGrowth?.watering ?? "";
     const rawBloom = trefleGrowth?.bloom_months;
-    const bloom = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
+    const bloomText = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
+    const bloom = safeParseBloom(bloomText).join(",");
 
     const result = await addPlant(garden.id, selectedZoneId, {
       x: plantPlacePosition.x,

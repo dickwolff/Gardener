@@ -62,6 +62,11 @@ export function parseBloomMonths(bloomTime: string | null): number[] {
   const parts = lower.split(/[,;&/\s]+/);
 
   for (const part of parts) {
+    const num = parseInt(part, 10);
+    if (num >= 1 && num <= 12) {
+      if (!months.includes(num)) months.push(num);
+      continue;
+    }
     const month = MONTH_MAP[part];
     if (month && !months.includes(month)) {
       months.push(month);

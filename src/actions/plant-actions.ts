@@ -56,12 +56,7 @@ export async function updatePlant(
 }
 
 export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
-  const bloomTime = bloomMonths
-    .map((m) => {
-      const names = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
-      return names[m - 1];
-    })
-    .join(", ");
+  const bloomTime = bloomMonths.join(",");
 
   const plant = await prisma.plant.update({
     where: { id: plantId },

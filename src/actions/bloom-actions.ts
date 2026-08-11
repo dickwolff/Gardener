@@ -24,22 +24,24 @@ export async function refreshBloomData(formData: FormData) {
       if (!res.ok) continue;
 
       const json = await res.json();
-      const detail = json.data ?? {};
-      const growth = (detail.main_species as Record<string, unknown>)?.growth || detail.growth || {};
+      const detail = json.data as Record<string, unknown>;
+      const growth = (detail.main_species as Record<string, unknown>)?.growth || detail.growth;
       const rawBloom = (growth as Record<string, unknown>)?.bloom_months;
-      const bloom = Array.isArray(rawBloom)
-        ? rawBloom.join(", ")
-        : typeof rawBloom === "string"
-          ? rawBloom
-          : "";
+      if (!rawBloom) continue;
 
-      if (bloom && bloom !== plant.bloomTime) {
-        await prisma.plant.update({
-          where: { id: plant.id },
-          data: { bloomTime: bloom },
-        });
-        updated++;
-      }
+      const rawText = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
+      if (!rawText) continue;
+
+      const { parseBloomMonths } = await import("@/lib/bloom");
+      const bloom = parseBloomMonths(rawText).join(",");
+
+      if (!bloom || bloom === plant.bloomTime) continue;
+
+      await prisma.plant.update({
+        where: { id: plant.id },
+        data: { bloomTime: bloom },
+      });
+      updated++;
     } catch {
       continue;
     }
