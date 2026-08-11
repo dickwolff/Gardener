@@ -25,8 +25,8 @@ export async function refreshBloomData(formData: FormData) {
 
       const json = await res.json();
       const detail = json.data ?? {};
-      const growth = detail.growth ?? {};
-      const rawBloom = growth?.bloom_months;
+      const growth = (detail.main_species as Record<string, unknown>)?.growth || detail.growth || {};
+      const rawBloom = (growth as Record<string, unknown>)?.bloom_months;
       const bloom = Array.isArray(rawBloom)
         ? rawBloom.join(", ")
         : typeof rawBloom === "string"

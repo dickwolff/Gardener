@@ -358,9 +358,9 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const detail = detailResult.data ?? {};
 
     const sunlight = Array.isArray(detail.sunlight) ? detail.sunlight.join(", ") : "";
-    const growth = detail.growth ?? {};
-    const watering = growth?.watering ?? "";
-    const rawBloom = growth?.bloom_months;
+    const trefleGrowth = extractTrefleGrowth(detail);
+    const watering = trefleGrowth?.watering ?? "";
+    const rawBloom = trefleGrowth?.bloom_months;
     const bloom = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
 
     const result = await addPlant(garden.id, selectedZoneId, {
@@ -1046,6 +1046,11 @@ function renderBoundaryLabels(points: Point[]) {
       })}
     </g>
   );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractTrefleGrowth(detail: any) {
+  return detail.main_species?.growth || detail.growth || {};
 }
 
 function snapToGrid(x: number, y: number): Point {
