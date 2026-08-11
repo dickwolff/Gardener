@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, type ReactNode } from "react";
+import { useState, useCallback, useEffect, useRef, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/drawer";
 import {
   createZone,
+  updateZone,
   deleteZone,
   deleteGarden,
 } from "@/actions/garden-actions";
@@ -30,6 +31,7 @@ import {
   getPlantDetail,
 } from "@/actions/plant-actions";
 import { useRouter } from "next/navigation";
+import { Minus, Plus, RotateCcw } from "lucide-react";
 
 type Point = { x: number; y: number };
 
@@ -107,6 +109,24 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   const [viewOffset, setViewOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [drawingZoneId, setDrawingZoneId] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState<Point | null>(null);
+
+  const zoomRef = useRef(zoom);
+  const offsetRef = useRef(viewOffset);
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  useEffect(() => {
+    offsetRef.current = viewOffset;
+  }, [viewOffset]);
+
+  const [dragState, setDragState] = useState<{
+    vertexIndex: number;
+    zoneId: string;
+    points: Point[];
+  } | null>(null);
 
   const [plantSearchOpen, setPlantSearchOpen] = useState(false);
   const [plantSearchQuery, setPlantSearchQuery] = useState("");
@@ -118,90 +138,167 @@ export function GardenEditor({ garden }: GardenEditorProps) {
 
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleSvgClick = useCallback(
-    (e: React.MouseEvent<SVGSVGElement>) => {
-      const svg = svgRef.current;
-      if (!svg) return;
+  function getSvgCoords(e: React.MouseEvent<SVGSVGElement>): Point {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
+    const rect = svg.getBoundingClientRect();
+    const z = zoomRef.current;
+    const vw = garden.width / z;
+    const vh = garden.height / z;
+    const vx = offsetRef.current.x;
+    const vy = offsetRef.current.y;
+    const x = vx + (e.clientX - rect.left) * (vw / rect.width);
+    const y = vy + (e.clientY - rect.top) * (vh / rect.height);
+    return { x, y };
+  }
 
-      const rect = svg.getBoundingClientRect();
-      const scaleX = garden.width / rect.width;
-      const scaleY = garden.height / rect.height;
-      const x = (e.clientX - rect.left) * scaleX;
-      const y = (e.clientY - rect.top) * scaleY;
-
-      if (tool === "boundary") {
-        const snapped = snapToGrid(x, y);
-        setDrawingPoints((prev) => [...prev, snapped]);
-        return;
-      }
-
-      if (tool === "zone") {
-        const snapped = snapToGrid(x, y);
-        if (!drawingZoneId) {
-          setDrawingPoints([snapped]);
-          setDrawingZoneId("drawing");
-        } else {
-          setDrawingPoints((prev) => [...prev, snapped]);
+  function findNearbyVertex(svgPos: Point): { zoneId: string; vertexIndex: number; points: Point[] } | null {
+    const threshold = 0.2 / zoom;
+    for (const z of zones) {
+      const pts = JSON.parse(z.points) as Point[];
+      for (let i = 0; i < pts.length; i++) {
+        const dx = pts[i].x - svgPos.x;
+        const dy = pts[i].y - svgPos.y;
+        if (Math.sqrt(dx * dx + dy * dy) < threshold) {
+          return { zoneId: z.id, vertexIndex: i, points: pts };
         }
-        return;
       }
+    }
+    return null;
+  }
 
-      if (tool === "plant") {
-        const snapped = snapToGrid(x, y);
-        setPlantPlacePosition(snapped);
-        setPlantSearchOpen(true);
-        setPlantSearchQuery("");
-        setPlantSearchResults([]);
-        return;
+  function handleSvgMouseDown(e: React.MouseEvent<SVGSVGElement>) {
+    const svgPos = getSvgCoords(e);
+    if (tool === "select") {
+      const nearbyVertex = findNearbyVertex(svgPos);
+      if (nearbyVertex) {
+        setDragState(nearbyVertex);
+        setSelectedZoneId(nearbyVertex.zoneId);
       }
+    }
+  }
 
-      if (tool === "select") {
-        const clickedPlant = plants.find(
-          (p) => Math.abs(p.x - x) < 0.15 && Math.abs(p.y - y) < 0.15
+  const handleSvgMouseUp = useCallback(
+    async () => {
+      if (dragState) {
+        const newPoints = [...dragState.points];
+        await updateZone(dragState.zoneId, { points: newPoints });
+        setZones((prev) =>
+          prev.map((z) =>
+            z.id === dragState.zoneId ? { ...z, points: JSON.stringify(newPoints) } : z
+          )
         );
-        if (clickedPlant) {
-          setSelectedPlantId(clickedPlant.id);
-          setSelectedZoneId(null);
-          setPlantDetailOpen(true);
-          return;
-        }
-
-        const clickedZone = zones.find((z) => {
-          const pts = JSON.parse(z.points) as Point[];
-          return pointInPolygon({ x, y }, pts);
-        });
-        if (clickedZone) {
-          setSelectedZoneId(clickedZone.id);
-          setSelectedPlantId(null);
-        } else {
-          setSelectedZoneId(null);
-          setSelectedPlantId(null);
-        }
+        setDragState(null);
       }
     },
-    [tool, drawingZoneId, plants, zones, garden.width, garden.height]
+    [dragState]
   );
 
-  const handleSvgMouseMove = useCallback(
-    (e: React.MouseEvent<SVGSVGElement>) => {
-      if (tool === "pan" && e.buttons === 1) {
+  function handleSvgClick(e: React.MouseEvent<SVGSVGElement>) {
+    if (dragState) return;
+
+    const svgPos = getSvgCoords(e);
+    const x = svgPos.x;
+    const y = svgPos.y;
+
+    if (tool === "boundary") {
+      const snapped = snapToGrid(x, y);
+      setDrawingPoints((prev) => [...prev, snapped]);
+      return;
+    }
+
+    if (tool === "zone") {
+      const snapped = snapToGrid(x, y);
+      if (!drawingZoneId) {
+        setDrawingPoints([snapped]);
+        setDrawingZoneId("drawing");
+      } else {
+        setDrawingPoints((prev) => [...prev, snapped]);
+      }
+      return;
+    }
+
+    if (tool === "plant") {
+      const snapped = snapToGrid(x, y);
+      setPlantPlacePosition(snapped);
+      setPlantSearchOpen(true);
+      setPlantSearchQuery("");
+      setPlantSearchResults([]);
+      return;
+    }
+
+    if (tool === "select") {
+      const clickedPlant = plants.find(
+        (p) => Math.abs(p.x - x) < 0.15 && Math.abs(p.y - y) < 0.15
+      );
+      if (clickedPlant) {
+        setSelectedPlantId(clickedPlant.id);
+        setSelectedZoneId(null);
+        setPlantDetailOpen(true);
+        return;
+      }
+
+      const clickedZone = zones.find((z) => {
+        const pts = JSON.parse(z.points) as Point[];
+        return pointInPolygon({ x, y }, pts);
+      });
+      if (clickedZone) {
+        setSelectedZoneId(clickedZone.id);
+        setSelectedPlantId(null);
+      } else {
+        setSelectedZoneId(null);
+        setSelectedPlantId(null);
+      }
+    }
+  }
+
+  function handleSvgMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+    const svgPos = getSvgCoords(e);
+    setMousePos(svgPos);
+
+    if (dragState) {
+      const newPoints = [...dragState.points];
+      newPoints[dragState.vertexIndex] = snapToGrid(svgPos.x, svgPos.y);
+      setDragState((prev) => prev ? { ...prev, points: newPoints } : null);
+      setZones((prev) =>
+        prev.map((z) =>
+          z.id === dragState.zoneId ? { ...z, points: JSON.stringify(newPoints) } : z
+        )
+      );
+      return;
+    }
+
+    if (tool === "pan" && e.buttons === 1) {
+      const svg = svgRef.current;
+      if (svg) {
+        const rect = svg.getBoundingClientRect();
+        const z = zoomRef.current;
+        const vw = garden.width / z;
+        const vh = garden.height / z;
         setViewOffset((prev) => ({
-          x: prev.x - e.movementX / zoom,
-          y: prev.y - e.movementY / zoom,
+          x: prev.x - e.movementX * (vw / rect.width),
+          y: prev.y - e.movementY * (vh / rect.height),
         }));
       }
-    },
-    [tool, zoom]
-  );
+    }
+  }
 
-  const handleWheel = useCallback(
-    (e: React.WheelEvent<SVGSVGElement>) => {
-      e.preventDefault();
-      const newZoom = Math.max(0.5, Math.min(5, zoom - e.deltaY * 0.001));
-      setZoom(newZoom);
-    },
-    [zoom]
-  );
+  function handleWheel(e: React.WheelEvent<SVGSVGElement>) {
+    e.preventDefault();
+  }
+
+  function zoomIn() {
+    setZoom((z) => Math.min(5, z * 1.3));
+  }
+
+  function zoomOut() {
+    setZoom((z) => Math.max(0.5, z / 1.3));
+  }
+
+  function resetView() {
+    setZoom(1);
+    setViewOffset({ x: 0, y: 0 });
+  }
 
   async function finishZone() {
     if (drawingPoints.length < 3) return;
@@ -329,6 +426,36 @@ export function GardenEditor({ garden }: GardenEditorProps) {
 
         <div className="w-px h-8 bg-border mx-1" />
 
+        <Button
+          size="sm"
+          variant="outline"
+          className="rounded-xl border-2 border-input h-9 w-9 p-0"
+          onClick={zoomOut}
+        >
+          <Minus className="w-4 h-4" />
+        </Button>
+        <span className="text-xs text-muted-foreground w-10 text-center">
+          {Math.round(zoom * 100)}%
+        </span>
+        <Button
+          size="sm"
+          variant="outline"
+          className="rounded-xl border-2 border-input h-9 w-9 p-0"
+          onClick={zoomIn}
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="rounded-xl border-2 border-input h-9 w-9 p-0"
+          onClick={resetView}
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+        </Button>
+
+        <div className="w-px h-8 bg-border mx-1" />
+
         {tool === "zone" && (
           <select
             value={zoneType}
@@ -392,9 +519,11 @@ export function GardenEditor({ garden }: GardenEditorProps) {
           <svg
             ref={svgRef}
             viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
-            className="w-full h-auto min-h-[500px] cursor-crosshair"
+            className="w-full h-auto min-h-[500px] cursor-crosshair select-none"
+            onMouseDown={handleSvgMouseDown}
             onClick={handleSvgClick}
             onMouseMove={handleSvgMouseMove}
+            onMouseUp={handleSvgMouseUp}
             onWheel={handleWheel}
             style={{ background: "#F5F5F5" }}
           >
@@ -406,13 +535,27 @@ export function GardenEditor({ garden }: GardenEditorProps) {
               return (
                 <g key={z.id}>
                   {selectedZoneId === z.id && (
-                    <polygon
-                      points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                      fill="none"
-                      stroke="#ECBA82"
-                      strokeWidth={0.06}
-                      strokeDasharray="0.15 0.1"
-                    />
+                    <>
+                      <polygon
+                        points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                        fill="none"
+                        stroke="#ECBA82"
+                        strokeWidth={0.06}
+                        strokeDasharray="0.15 0.1"
+                      />
+                      {pts.map((p, i) => (
+                        <circle
+                          key={`v-${i}`}
+                          cx={p.x}
+                          cy={p.y}
+                          r={0.12}
+                          fill="#ECBA82"
+                          stroke="#FFFFFF"
+                          strokeWidth={0.03}
+                          style={{ cursor: "pointer" }}
+                        />
+                      ))}
+                    </>
                   )}
                   <polygon
                     points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
@@ -468,6 +611,34 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                 strokeWidth={tool === "boundary" ? 0.08 : 0.06}
                 strokeDasharray={tool === "boundary" ? "none" : "0.15 0.1"}
               />
+            )}
+
+            {drawingPoints.length > 0 && mousePos && (
+              <>
+                <line
+                  x1={drawingPoints[drawingPoints.length - 1].x}
+                  y1={drawingPoints[drawingPoints.length - 1].y}
+                  x2={mousePos.x}
+                  y2={mousePos.y}
+                  stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                  strokeWidth={0.04}
+                  strokeDasharray="0.1 0.1"
+                  opacity={0.5}
+                />
+                <text
+                  x={(drawingPoints[drawingPoints.length - 1].x + mousePos.x) / 2}
+                  y={(drawingPoints[drawingPoints.length - 1].y + mousePos.y) / 2 - 0.12}
+                  textAnchor="middle"
+                  fontSize={0.2}
+                  fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                  style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+                >
+                  {Math.sqrt(
+                    (mousePos.x - drawingPoints[drawingPoints.length - 1].x) ** 2 +
+                    (mousePos.y - drawingPoints[drawingPoints.length - 1].y) ** 2
+                  ).toFixed(2)}m
+                </text>
+              </>
             )}
 
             {drawingPoints.map((p, i) => (
