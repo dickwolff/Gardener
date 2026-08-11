@@ -407,9 +407,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const watering = trefleGrowth?.watering ?? "";
     const rawBloom = trefleGrowth?.bloom_months;
     const bloom = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
-    console.log("[DEBUG handlePlacePlant] plant:", plant.common_name);
-    console.log("[DEBUG handlePlacePlant] rawBloom:", rawBloom);
-    console.log("[DEBUG handlePlacePlant] bloom:", bloom);
 
     const result = await addPlant(garden.id, selectedZoneId, {
       x: plantPlacePosition.x,

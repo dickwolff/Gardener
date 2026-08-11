@@ -25,9 +25,6 @@ export async function refreshBloomData(formData: FormData) {
 
       const json = await res.json();
       const detail = json.data ?? {};
-      console.log("[DEBUG refreshBloomData] trefleId:", plant.trefleId, "name:", plant.name);
-      console.log("[DEBUG refreshBloomData] detail.growth:", JSON.stringify(detail.growth));
-      console.log("[DEBUG refreshBloomData] main_species.growth:", JSON.stringify(detail.main_species?.growth));
       const growth = (detail.main_species as Record<string, unknown>)?.growth || detail.growth || {};
       const rawBloom = (growth as Record<string, unknown>)?.bloom_months;
       const bloom = Array.isArray(rawBloom)
@@ -35,7 +32,6 @@ export async function refreshBloomData(formData: FormData) {
         : typeof rawBloom === "string"
           ? rawBloom
           : "";
-      console.log("[DEBUG refreshBloomData] rawBloom:", JSON.stringify(rawBloom), "-> bloom:", bloom);
 
       if (bloom && bloom !== plant.bloomTime) {
         await prisma.plant.update({

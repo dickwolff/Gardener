@@ -13,11 +13,13 @@ import { monthLabel } from "@/lib/bloom";
 interface BloomMonthEditorProps {
   plantId: string;
   plantName: string;
+  initialMonths?: number[];
+  label?: string;
 }
 
-export function BloomMonthEditor({ plantId, plantName }: BloomMonthEditorProps) {
+export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label }: BloomMonthEditorProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number[]>(initialMonths);
   const [saving, setSaving] = useState(false);
 
   function toggleMonth(m: number) {
@@ -38,7 +40,7 @@ export function BloomMonthEditor({ plantId, plantName }: BloomMonthEditorProps) 
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
         <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
-          Bloei instellen
+          {label || "Bloei instellen"}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="rounded-2xl border-0 w-72 p-4">

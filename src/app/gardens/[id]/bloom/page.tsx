@@ -209,6 +209,12 @@ export default async function BloomPage({ params }: BloomPageProps) {
                         />
                       ))}
                     </div>
+                    <BloomMonthEditor
+                      plantId={plant.id}
+                      plantName={plant.name}
+                      initialMonths={plant.bloomMonths}
+                      label="Bewerk"
+                    />
                   </div>
                 ))}
               </CardContent>

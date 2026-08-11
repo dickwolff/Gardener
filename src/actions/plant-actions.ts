@@ -119,11 +119,7 @@ export async function getPlantDetail(trefleId: number) {
     }
 
     const json = await res.json();
-    const data = json.data || json;
-    console.log("[DEBUG getPlantDetail] trefleId:", trefleId);
-    console.log("[DEBUG getPlantDetail] growth:", JSON.stringify(data.growth));
-    console.log("[DEBUG getPlantDetail] main_species.growth:", JSON.stringify(data.main_species?.growth));
-    return { data };
+    return { data: json.data || json };
   } catch {
     return { error: "Kon geen plantgegevens ophalen." };
   }
