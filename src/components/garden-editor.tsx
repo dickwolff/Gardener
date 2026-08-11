@@ -1,0 +1,881 @@
+"use client";
+
+import { useState, useCallback, useRef, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import {
+  createZone,
+  deleteZone,
+  deleteGarden,
+} from "@/actions/garden-actions";
+import {
+  addPlant,
+  removePlant,
+  searchPlants,
+  getPlantDetail,
+} from "@/actions/plant-actions";
+import { useRouter } from "next/navigation";
+
+type Point = { x: number; y: number };
+
+type ZoneType = "grass" | "border" | "terrace" | "fence" | "pond" | "path" | "pergola" | "custom";
+
+interface GardenData {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  scale: number;
+  zones: {
+    id: string;
+    type: string;
+    name: string | null;
+    color: string | null;
+    points: string;
+    order: number;
+  }[];
+  plants: {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    zoneId: string | null;
+    commonName: string | null;
+    scientificName: string | null;
+    watering: string | null;
+    sunlight: string | null;
+    bloomTime: string | null;
+    imageUrl: string | null;
+    notes: string | null;
+  }[];
+}
+
+const ZONE_COLORS: Record<string, { fill: string; stroke: string; label: string }> = {
+  grass: { fill: "#C8E6C9", stroke: "#81C784", label: "Gras" },
+  border: { fill: "#D7CCC8", stroke: "#A1887F", label: "Border" },
+  terrace: { fill: "#E0E0E0", stroke: "#BDBDBD", label: "Terras" },
+  fence: { fill: "#D4A574", stroke: "#8D6E63", label: "Schutting" },
+  pond: { fill: "#B3E5FC", stroke: "#4FC3F7", label: "Vijver" },
+  path: { fill: "#FFF9C4", stroke: "#D4E157", label: "Pad" },
+  pergola: { fill: "rgba(139, 90, 43, 0.15)", stroke: "#8B5A2B", label: "Pergola" },
+  custom: { fill: "#F3E5F5", stroke: "#CE93D8", label: "Aangepast" },
+};
+
+const ZONE_TYPES = Object.keys(ZONE_COLORS) as ZoneType[];
+
+const GRID_SIZE = 0.25;
+
+type Tool = "boundary" | "zone" | "plant" | "select" | "pan";
+
+interface PlantSearchResult {
+  id: number;
+  common_name: string;
+  scientific_name: string;
+  image_url: string;
+}
+
+interface GardenEditorProps {
+  garden: GardenData;
+}
+
+export function GardenEditor({ garden }: GardenEditorProps) {
+  const router = useRouter();
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const [tool, setTool] = useState<Tool>("select");
+  const [drawingPoints, setDrawingPoints] = useState<Point[]>([]);
+  const [zoneType, setZoneType] = useState<ZoneType>("border");
+  const [zones, setZones] = useState(garden.zones);
+  const [plants, setPlants] = useState(garden.plants);
+  const [selectedPlantId, setSelectedPlantId] = useState<string | null>(null);
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+  const [viewOffset, setViewOffset] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [drawingZoneId, setDrawingZoneId] = useState<string | null>(null);
+
+  const [plantSearchOpen, setPlantSearchOpen] = useState(false);
+  const [plantSearchQuery, setPlantSearchQuery] = useState("");
+  const [plantSearchResults, setPlantSearchResults] = useState<PlantSearchResult[]>([]);
+  const [plantSearchLoading, setPlantSearchLoading] = useState(false);
+  const [plantSearchError, setPlantSearchError] = useState("");
+  const [plantPlacePosition, setPlantPlacePosition] = useState<Point | null>(null);
+  const [plantDetailOpen, setPlantDetailOpen] = useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleSvgClick = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      const svg = svgRef.current;
+      if (!svg) return;
+
+      const rect = svg.getBoundingClientRect();
+      const scaleX = garden.width / rect.width;
+      const scaleY = garden.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      if (tool === "boundary") {
+        const snapped = snapToGrid(x, y);
+        setDrawingPoints((prev) => [...prev, snapped]);
+        return;
+      }
+
+      if (tool === "zone") {
+        const snapped = snapToGrid(x, y);
+        if (!drawingZoneId) {
+          setDrawingPoints([snapped]);
+          setDrawingZoneId("drawing");
+        } else {
+          setDrawingPoints((prev) => [...prev, snapped]);
+        }
+        return;
+      }
+
+      if (tool === "plant") {
+        const snapped = snapToGrid(x, y);
+        setPlantPlacePosition(snapped);
+        setPlantSearchOpen(true);
+        setPlantSearchQuery("");
+        setPlantSearchResults([]);
+        return;
+      }
+
+      if (tool === "select") {
+        const clickedPlant = plants.find(
+          (p) => Math.abs(p.x - x) < 0.15 && Math.abs(p.y - y) < 0.15
+        );
+        if (clickedPlant) {
+          setSelectedPlantId(clickedPlant.id);
+          setSelectedZoneId(null);
+          setPlantDetailOpen(true);
+          return;
+        }
+
+        const clickedZone = zones.find((z) => {
+          const pts = JSON.parse(z.points) as Point[];
+          return pointInPolygon({ x, y }, pts);
+        });
+        if (clickedZone) {
+          setSelectedZoneId(clickedZone.id);
+          setSelectedPlantId(null);
+        } else {
+          setSelectedZoneId(null);
+          setSelectedPlantId(null);
+        }
+      }
+    },
+    [tool, drawingZoneId, plants, zones, garden.width, garden.height]
+  );
+
+  const handleSvgMouseMove = useCallback(
+    (e: React.MouseEvent<SVGSVGElement>) => {
+      if (tool === "pan" && e.buttons === 1) {
+        setViewOffset((prev) => ({
+          x: prev.x - e.movementX / zoom,
+          y: prev.y - e.movementY / zoom,
+        }));
+      }
+    },
+    [tool, zoom]
+  );
+
+  const handleWheel = useCallback(
+    (e: React.WheelEvent<SVGSVGElement>) => {
+      e.preventDefault();
+      const newZoom = Math.max(0.5, Math.min(5, zoom - e.deltaY * 0.001));
+      setZoom(newZoom);
+    },
+    [zoom]
+  );
+
+  async function finishZone() {
+    if (drawingPoints.length < 3) return;
+
+    const name = ZONE_COLORS[zoneType].label;
+    const color = ZONE_COLORS[zoneType].fill;
+
+    const result = await createZone(garden.id, {
+      type: zoneType,
+      name,
+      points: drawingPoints,
+      color,
+    });
+
+    if (result.success && result.data) {
+      setZones((prev) => [...prev, { ...result.data, points: result.data.points }]);
+    }
+
+    setDrawingPoints([]);
+    setDrawingZoneId(null);
+  }
+
+  async function finishBoundary() {
+    setDrawingPoints([]);
+  }
+
+  async function handleDeleteZone() {
+    if (!selectedZoneId) return;
+    await deleteZone(selectedZoneId);
+    setZones((prev) => prev.filter((z) => z.id !== selectedZoneId));
+    setSelectedZoneId(null);
+  }
+
+  async function handleSearchPlants() {
+    if (plantSearchQuery.length < 2) return;
+    setPlantSearchLoading(true);
+    setPlantSearchError("");
+
+    const result = await searchPlants(plantSearchQuery);
+
+    if (result.error) {
+      setPlantSearchError(result.error);
+    } else if (result.data) {
+      const plants = Array.isArray(result.data) ? result.data : [];
+      setPlantSearchResults(plants.slice(0, 20));
+    }
+
+    setPlantSearchLoading(false);
+  }
+
+  async function handlePlacePlant(plant: PlantSearchResult) {
+    if (!plantPlacePosition) return;
+
+    const detailResult = await getPlantDetail(plant.id);
+    const detail = detailResult.data ?? {};
+
+    const sunlight = Array.isArray(detail.sunlight) ? detail.sunlight.join(", ") : "";
+    const growth = detail.growth ?? {};
+    const watering = growth?.watering ?? "";
+    const bloom = growth?.bloom_months ?? "";
+
+    const result = await addPlant(garden.id, selectedZoneId, {
+      x: plantPlacePosition.x,
+      y: plantPlacePosition.y,
+      name: plant.common_name || plant.scientific_name,
+      commonName: plant.common_name,
+      scientificName: plant.scientific_name,
+      imageUrl: plant.image_url,
+      watering: typeof watering === "string" ? watering : "",
+      sunlight: typeof sunlight === "string" ? sunlight : "",
+      bloomTime: typeof bloom === "string" ? bloom : "",
+      trefleId: plant.id,
+    });
+
+    if (result.success && result.data) {
+      setPlants((prev) => [...prev, result.data]);
+    }
+
+    setPlantSearchOpen(false);
+    setPlantPlacePosition(null);
+    setPlantSearchResults([]);
+    setPlantSearchQuery("");
+  }
+
+  async function handleRemovePlant() {
+    if (!selectedPlantId) return;
+    await removePlant(selectedPlantId);
+    setPlants((prev) => prev.filter((p) => p.id !== selectedPlantId));
+    setSelectedPlantId(null);
+    setPlantDetailOpen(false);
+  }
+
+  async function handleDeleteGarden() {
+    if (!confirm("Weet je zeker dat je deze tuin wilt verwijderen? Alle zones en planten worden ook verwijderd.")) return;
+    setIsDeleting(true);
+    await deleteGarden(garden.id);
+    router.push("/");
+  }
+
+  const selectedPlant = plants.find((p) => p.id === selectedPlantId);
+
+  const viewBoxWidth = garden.width / zoom;
+  const viewBoxHeight = garden.height / zoom;
+  const viewBoxX = viewOffset.x;
+  const viewBoxY = viewOffset.y;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2 items-center">
+        <ToolButton active={tool === "select"} onClick={() => { setTool("select"); setDrawingPoints([]); setDrawingZoneId(null); }}>
+          Selecteren
+        </ToolButton>
+        <ToolButton active={tool === "boundary"} onClick={() => { setTool("boundary"); setDrawingPoints([]); setDrawingZoneId(null); }}>
+          Omtrek tekenen
+        </ToolButton>
+        <ToolButton active={tool === "zone"} onClick={() => { setTool("zone"); setDrawingPoints([]); setDrawingZoneId(null); }}>
+          Zone tekenen
+        </ToolButton>
+        <ToolButton active={tool === "plant"} onClick={() => { setTool("plant"); setDrawingPoints([]); setDrawingZoneId(null); }}>
+          Plant plaatsen
+        </ToolButton>
+        <ToolButton active={tool === "pan"} onClick={() => { setTool("pan"); setDrawingPoints([]); setDrawingZoneId(null); }}>
+          Verschuiven
+        </ToolButton>
+
+        <div className="w-px h-8 bg-border mx-1" />
+
+        {tool === "zone" && (
+          <select
+            value={zoneType}
+            onChange={(e) => setZoneType(e.target.value as ZoneType)}
+            className="rounded-xl border-2 border-input px-3 py-1.5 text-sm bg-background"
+          >
+            {ZONE_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {ZONE_COLORS[t].label}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {drawingPoints.length >= 3 && tool === "zone" && (
+          <Button
+            size="sm"
+            className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={finishZone}
+          >
+            Zone vastleggen
+          </Button>
+        )}
+
+        {drawingPoints.length >= 3 && tool === "boundary" && (
+          <Button
+            size="sm"
+            className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={finishBoundary}
+          >
+            Omtrek vastleggen
+          </Button>
+        )}
+
+        {selectedZoneId && (
+          <Button
+            size="sm"
+            variant="destructive"
+            className="rounded-xl ml-auto"
+            onClick={handleDeleteZone}
+          >
+            Zone verwijderen
+          </Button>
+        )}
+
+        <div className="ml-auto">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="rounded-xl text-muted-foreground hover:text-destructive"
+            onClick={handleDeleteGarden}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Bezig..." : "Tuin verwijderen"}
+          </Button>
+        </div>
+      </div>
+
+      <Card className="rounded-2xl border-0 overflow-hidden">
+        <CardContent className="p-0">
+          <svg
+            ref={svgRef}
+            viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
+            className="w-full h-auto min-h-[500px] cursor-crosshair"
+            onClick={handleSvgClick}
+            onMouseMove={handleSvgMouseMove}
+            onWheel={handleWheel}
+            style={{ background: "#F5F5F5" }}
+          >
+            {renderGrid(garden.width, garden.height, GRID_SIZE)}
+
+            {zones.map((z) => {
+              const pts = JSON.parse(z.points) as Point[];
+              const colors = ZONE_COLORS[z.type] || ZONE_COLORS.custom;
+              return (
+                <g key={z.id}>
+                  {selectedZoneId === z.id && (
+                    <polygon
+                      points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                      fill="none"
+                      stroke="#ECBA82"
+                      strokeWidth={0.06}
+                      strokeDasharray="0.15 0.1"
+                    />
+                  )}
+                  <polygon
+                    points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                    fill={colors.fill}
+                    stroke={colors.stroke}
+                    strokeWidth={0.04}
+                    opacity={0.7}
+                  />
+                  {renderZonePattern(z.type, pts)}
+                  <text
+                    x={pts.reduce((s, p) => s + p.x, 0) / pts.length}
+                    y={pts.reduce((s, p) => s + p.y, 0) / pts.length}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize={0.3}
+                    fill="#57564C"
+                    style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+                  >
+                    {z.name || colors.label}
+                  </text>
+                </g>
+              );
+            })}
+
+            {plants.map((p) => (
+              <g key={p.id}>
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={0.12}
+                  fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
+                  stroke="#FFFFFF"
+                  strokeWidth={0.03}
+                />
+                <text
+                  x={p.x}
+                  y={p.y - 0.2}
+                  textAnchor="middle"
+                  fontSize={0.2}
+                  fill="#2E2E2E"
+                  style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+                >
+                  {p.name}
+                </text>
+              </g>
+            ))}
+
+            {drawingPoints.length > 0 && (
+              <polyline
+                points={drawingPoints.map((p) => `${p.x},${p.y}`).join(" ")}
+                fill="none"
+                stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                strokeWidth={tool === "boundary" ? 0.08 : 0.06}
+                strokeDasharray={tool === "boundary" ? "none" : "0.15 0.1"}
+              />
+            )}
+
+            {drawingPoints.map((p, i) => (
+              <circle
+                key={i}
+                cx={p.x}
+                cy={p.y}
+                r={0.08}
+                fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+              />
+            ))}
+
+            {renderBoundaryLabels(drawingPoints)}
+          </svg>
+        </CardContent>
+      </Card>
+
+      {zones.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {ZONE_TYPES.map((t) => {
+            const count = zones.filter((z) => z.type === t).length;
+            if (count === 0) return null;
+            return (
+              <Badge key={t} className="rounded-xl" variant="secondary">
+                {ZONE_COLORS[t].label}: {count}
+              </Badge>
+            );
+          })}
+          <Badge className="rounded-xl" variant="secondary">
+            Planten: {plants.length}
+          </Badge>
+        </div>
+      )}
+
+      <PlantSearchDrawer
+        open={plantSearchOpen}
+        onClose={() => {
+          setPlantSearchOpen(false);
+          setPlantPlacePosition(null);
+          setPlantSearchResults([]);
+          setPlantSearchQuery("");
+        }}
+        query={plantSearchQuery}
+        onQueryChange={setPlantSearchQuery}
+        onSearch={handleSearchPlants}
+        results={plantSearchResults}
+        loading={plantSearchLoading}
+        error={plantSearchError}
+        onSelect={handlePlacePlant}
+      />
+
+      <Dialog open={plantDetailOpen} onOpenChange={setPlantDetailOpen}>
+        <DialogContent className="rounded-2xl border-0 sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle
+              className="text-xl text-[#2E2E2E]"
+              style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+            >
+              {selectedPlant?.name}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedPlant && (
+            <div className="space-y-4">
+              {selectedPlant.imageUrl && (
+                <img
+                  src={selectedPlant.imageUrl}
+                  alt={selectedPlant.name}
+                  className="w-full h-48 object-cover rounded-xl"
+                />
+              )}
+              {selectedPlant.scientificName && (
+                <p className="text-muted-foreground italic">{selectedPlant.scientificName}</p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                {selectedPlant.sunlight && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Zonlicht</Label>
+                    <p className="text-sm">{selectedPlant.sunlight}</p>
+                  </div>
+                )}
+                {selectedPlant.watering && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Water geven</Label>
+                    <p className="text-sm">{selectedPlant.watering}</p>
+                  </div>
+                )}
+                {selectedPlant.bloomTime && (
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Bloeiperiode</Label>
+                    <p className="text-sm">{selectedPlant.bloomTime}</p>
+                  </div>
+                )}
+              </div>
+              {selectedPlant.notes && (
+                <div>
+                  <Label className="text-xs text-muted-foreground">Notities</Label>
+                  <p className="text-sm">{selectedPlant.notes}</p>
+                </div>
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="rounded-xl"
+                  onClick={handleRemovePlant}
+                >
+                  Verwijderen
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function ToolButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <Button
+      size="sm"
+      variant={active ? "default" : "outline"}
+      className={`rounded-xl text-sm h-9 ${
+        active
+          ? "bg-secondary text-secondary-foreground hover:bg-secondary/90"
+          : "border-2 border-input hover:bg-muted"
+      }`}
+      onClick={onClick}
+    >
+      {children}
+    </Button>
+  );
+}
+
+function PlantSearchDrawer({
+  open,
+  onClose,
+  query,
+  onQueryChange,
+  onSearch,
+  results,
+  loading,
+  error,
+  onSelect,
+}: {
+  open: boolean;
+  onClose: () => void;
+  query: string;
+  onQueryChange: (v: string) => void;
+  onSearch: () => void;
+  results: PlantSearchResult[];
+  loading: boolean;
+  error: string;
+  onSelect: (plant: PlantSearchResult) => void;
+}) {
+  return (
+    <Drawer open={open} onOpenChange={(o) => !o && onClose()}>
+      <DrawerContent className="rounded-t-2xl border-0 max-h-[70vh]">
+        <DrawerHeader>
+          <DrawerTitle
+            className="text-xl text-[#2E2E2E]"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+          >
+            Plant zoeken
+          </DrawerTitle>
+        </DrawerHeader>
+        <div className="px-4 pb-4 space-y-4">
+          <div className="flex gap-2">
+            <Input
+              value={query}
+              onChange={(e) => onQueryChange(e.target.value)}
+              placeholder="Zoek op naam..."
+              className="rounded-xl border-input border-2"
+              onKeyDown={(e) => e.key === "Enter" && onSearch()}
+            />
+            <Button
+              onClick={onSearch}
+              disabled={loading || query.length < 2}
+              className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Zoek
+            </Button>
+          </div>
+
+          {error && <p className="text-destructive text-sm">{error}</p>}
+
+          <div className="space-y-2 overflow-y-auto max-h-[40vh]">
+            {results.map((plant) => (
+              <Card
+                key={plant.id}
+                className="rounded-xl border-0 cursor-pointer hover:bg-muted transition-colors"
+                onClick={() => onSelect(plant)}
+              >
+                <CardContent className="flex items-center gap-3 p-3">
+                  {plant.image_url && (
+                    <img
+                      src={plant.image_url}
+                      alt={plant.common_name}
+                      className="w-12 h-12 rounded-lg object-cover"
+                    />
+                  )}
+                  <div>
+                    <p className="font-medium text-sm">{plant.common_name}</p>
+                    <p className="text-xs text-muted-foreground italic">{plant.scientific_name}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {!loading && query.length >= 2 && results.length === 0 && !error && (
+              <p className="text-muted-foreground text-sm text-center py-4">
+                Geen resultaten gevonden.
+              </p>
+            )}
+            {loading && (
+              <p className="text-muted-foreground text-sm text-center py-4">
+                Zoeken...
+              </p>
+            )}
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
+function renderGrid(width: number, height: number, size: number) {
+  const lines = [];
+  const xCount = Math.ceil(width / size);
+  const yCount = Math.ceil(height / size);
+
+  for (let i = 0; i <= xCount; i++) {
+    const x = i * size;
+    lines.push(
+      <line
+        key={`v${i}`}
+        x1={x}
+        y1={0}
+        x2={x}
+        y2={height}
+        stroke="#E9E6E6"
+        strokeWidth={i % 4 === 0 ? 0.02 : 0.01}
+      />
+    );
+  }
+
+  for (let i = 0; i <= yCount; i++) {
+    const y = i * size;
+    lines.push(
+      <line
+        key={`h${i}`}
+        x1={0}
+        y1={y}
+        x2={width}
+        y2={y}
+        stroke="#E9E6E6"
+        strokeWidth={i % 4 === 0 ? 0.02 : 0.01}
+      />
+    );
+  }
+
+  return <g>{lines}</g>;
+}
+
+function renderZonePattern(type: string, points: Point[]) {
+  if (type === "grass") {
+    const centerX = points.reduce((s, p) => s + p.x, 0) / points.length;
+    const centerY = points.reduce((s, p) => s + p.y, 0) / points.length;
+    const lineCount = 12;
+    const elements = [];
+    for (let i = 0; i < lineCount; i++) {
+      const angle = (i / lineCount) * Math.PI;
+      const dx = Math.cos(angle) * 0.08;
+      const dy = Math.sin(angle) * 0.08;
+      elements.push(
+        <line
+          key={`grass-${i}`}
+          x1={centerX - dx + (i % 3) * 0.2 - 0.2}
+          y1={centerY - dy}
+          x2={centerX - dx + (i % 3) * 0.2 - 0.2 + 0.1}
+          y2={centerY - dy - 0.15}
+          stroke="#81C784"
+          strokeWidth={0.02}
+          opacity={0.6}
+        />
+      );
+    }
+    return <g>{elements}</g>;
+  }
+
+  if (type === "terrace") {
+    const elements = [];
+    for (let i = 0; i < 8; i++) {
+      elements.push(
+        <line
+          key={`ter-${i}`}
+          x1={points[0].x + i * 0.4}
+          y1={points[0].y}
+          x2={points[0].x + i * 0.4 + 0.3}
+          y2={points[0].y + 0.3}
+          stroke="#BDBDBD"
+          strokeWidth={0.02}
+          opacity={0.5}
+        />
+      );
+    }
+    return <g>{elements}</g>;
+  }
+
+  if (type === "pergola") {
+    const elements = [];
+    const minX = Math.min(...points.map((p) => p.x));
+    const maxX = Math.max(...points.map((p) => p.x));
+    const minY = Math.min(...points.map((p) => p.y));
+    const maxY = Math.max(...points.map((p) => p.y));
+    const spacing = 0.3;
+
+    for (let x = minX; x <= maxX; x += spacing) {
+      elements.push(
+        <line
+          key={`perg-h-${x}`}
+          x1={x}
+          y1={minY}
+          x2={x}
+          y2={maxY}
+          stroke="#8B5A2B"
+          strokeWidth={0.04}
+          opacity={0.7}
+          strokeDasharray="0.15 0.08"
+        />
+      );
+    }
+
+    for (let y = minY; y <= maxY; y += spacing) {
+      elements.push(
+        <line
+          key={`perg-v-${y}`}
+          x1={minX}
+          y1={y}
+          x2={maxX}
+          y2={y}
+          stroke="#8B5A2B"
+          strokeWidth={0.06}
+          opacity={0.7}
+        />
+      );
+    }
+
+    return <g>{elements}</g>;
+  }
+
+  return null;
+}
+
+function renderBoundaryLabels(points: Point[]) {
+  if (points.length < 2) return null;
+
+  return (
+    <g>
+      {points.map((p, i) => {
+        const next = points[(i + 1) % points.length];
+        const midX = (p.x + next.x) / 2;
+        const midY = (p.y + next.y) / 2;
+        const dist = Math.sqrt((next.x - p.x) ** 2 + (next.y - p.y) ** 2);
+
+        return (
+          <text
+            key={`label-${i}`}
+            x={midX}
+            y={midY - 0.15}
+            textAnchor="middle"
+            fontSize={0.22}
+            fill="#82817A"
+            style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+          >
+            {dist.toFixed(2)}m
+          </text>
+        );
+      })}
+    </g>
+  );
+}
+
+function snapToGrid(x: number, y: number): Point {
+  return {
+    x: Math.round(x / GRID_SIZE) * GRID_SIZE,
+    y: Math.round(y / GRID_SIZE) * GRID_SIZE,
+  };
+}
+
+function pointInPolygon(point: Point, polygon: Point[]): boolean {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+
+    if (yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}

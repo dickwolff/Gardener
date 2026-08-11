@@ -1,0 +1,66 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  gardens   Garden[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Garden {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  width     Float
+  height    Float
+  scale     Float    @default(1.0)
+  zones     Zone[]
+  plants    Plant[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Zone {
+  id       String  @id @default(uuid())
+  gardenId String
+  garden   Garden  @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+  type     String
+  name     String?
+  color    String?
+  points   String
+  order    Int     @default(0)
+  plants   Plant[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Plant {
+  id             String    @id @default(uuid())
+  gardenId       String
+  garden         Garden    @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+  zoneId         String?
+  zone           Zone?     @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+  x              Float
+  y              Float
+  trefleId       Int?
+  name           String
+  commonName     String?
+  scientificName String?
+  imageUrl       String?
+  watering       String?
+  sunlight       String?
+  bloomTime      String?
+  notes          String?
+  plantedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
