@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +20,7 @@ interface BloomMonthEditorProps {
 }
 
 export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label }: BloomMonthEditorProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
@@ -32,20 +34,18 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
   }, [open, initialMonths]);
 
   function toggleMonth(m: number) {
-    setSelected((prev) => {
-      const next = prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m].sort((a, b) => a - b);
-      console.log("[DEBUG toggleMonth] m:", m, "prev:", prev, "next:", next);
-      return next;
-    });
+    setSelected((prev) =>
+      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m].sort((a, b) => a - b)
+    );
   }
 
   async function handleSave() {
     if (selected.length === 0) return;
-    console.log("[DEBUG handleSave] selected:", selected);
     setSaving(true);
     await updateBloomTime(plantId, selected);
     setSaving(false);
     setOpen(false);
+    router.refresh();
   }
 
   return (
