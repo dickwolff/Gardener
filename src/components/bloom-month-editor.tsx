@@ -32,13 +32,16 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
   }, [open, initialMonths]);
 
   function toggleMonth(m: number) {
-    setSelected((prev) =>
-      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m].sort((a, b) => a - b)
-    );
+    setSelected((prev) => {
+      const next = prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m].sort((a, b) => a - b);
+      console.log("[DEBUG toggleMonth] m:", m, "prev:", prev, "next:", next);
+      return next;
+    });
   }
 
   async function handleSave() {
     if (selected.length === 0) return;
+    console.log("[DEBUG handleSave] selected:", selected);
     setSaving(true);
     await updateBloomTime(plantId, selected);
     setSaving(false);

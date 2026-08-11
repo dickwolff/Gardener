@@ -56,6 +56,7 @@ export async function updatePlant(
 }
 
 export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
+  console.log("[DEBUG updateBloomTime] called with plantId:", plantId, "months:", bloomMonths);
   const bloomTime = bloomMonths
     .map((m) => {
       const names = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
@@ -63,11 +64,14 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
     })
     .join(", ");
 
+  console.log("[DEBUG updateBloomTime] bloomTime string:", bloomTime);
+
   const plant = await prisma.plant.update({
     where: { id: plantId },
     data: { bloomTime },
   });
 
+  console.log("[DEBUG updateBloomTime] saved, gardenId:", plant.gardenId);
   revalidatePath(`/gardens/${plant.gardenId}/bloom`);
   return { success: true };
 }
