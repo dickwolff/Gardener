@@ -527,7 +527,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
             onWheel={handleWheel}
             style={{ background: "#F5F5F5" }}
           >
-            {renderGrid(garden.width, garden.height, GRID_SIZE)}
+            {renderGrid(GRID_SIZE, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight)}
 
             {zones.map((z) => {
               const pts = JSON.parse(z.points) as Point[];
@@ -872,37 +872,44 @@ function PlantSearchDrawer({
   );
 }
 
-function renderGrid(width: number, height: number, size: number) {
+function renderGrid(
+  size: number,
+  vx: number,
+  vy: number,
+  vw: number,
+  vh: number
+) {
   const lines = [];
-  const xCount = Math.ceil(width / size);
-  const yCount = Math.ceil(height / size);
+  const margin = 50;
+  const startX = Math.floor((vx - margin) / size) * size;
+  const endX = Math.ceil((vx + vw + margin) / size) * size;
+  const startY = Math.floor((vy - margin) / size) * size;
+  const endY = Math.ceil((vy + vh + margin) / size) * size;
 
-  for (let i = 0; i <= xCount; i++) {
-    const x = i * size;
+  for (let x = startX; x <= endX; x += size) {
     lines.push(
       <line
-        key={`v${i}`}
+        key={`v${x}`}
         x1={x}
-        y1={0}
+        y1={vy - margin}
         x2={x}
-        y2={height}
+        y2={vy + vh + margin}
         stroke="#E9E6E6"
-        strokeWidth={i % 4 === 0 ? 0.02 : 0.01}
+        strokeWidth={Math.round(x * 100) % 100 === 0 ? 0.02 : 0.01}
       />
     );
   }
 
-  for (let i = 0; i <= yCount; i++) {
-    const y = i * size;
+  for (let y = startY; y <= endY; y += size) {
     lines.push(
       <line
-        key={`h${i}`}
-        x1={0}
+        key={`h${y}`}
+        x1={vx - margin}
         y1={y}
-        x2={width}
+        x2={vx + vw + margin}
         y2={y}
         stroke="#E9E6E6"
-        strokeWidth={i % 4 === 0 ? 0.02 : 0.01}
+        strokeWidth={Math.round(y * 100) % 100 === 0 ? 0.02 : 0.01}
       />
     );
   }
