@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,8 +20,16 @@ interface BloomMonthEditorProps {
 
 export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label }: BloomMonthEditorProps) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<number[]>(initialMonths);
+  const [selected, setSelected] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
+  const prevOpen = useRef(false);
+
+  useEffect(() => {
+    if (open && !prevOpen.current) {
+      setSelected([...initialMonths]);
+    }
+    prevOpen.current = open;
+  }, [open, initialMonths]);
 
   function toggleMonth(m: number) {
     setSelected((prev) =>
@@ -37,20 +45,13 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
     setOpen(false);
   }
 
-  function handleOpen(open: boolean) {
-    if (open) {
-      setSelected(initialMonths);
-    }
-    setOpen(open);
-  }
-
   return (
-    <Dialog open={open} onOpenChange={handleOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <Button
         variant="outline"
         size="sm"
         className="rounded-xl border-2 border-input h-7 text-xs"
-        onClick={() => handleOpen(true)}
+        onClick={() => setOpen(true)}
       >
         {label || "Bloei instellen"}
       </Button>

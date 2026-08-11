@@ -196,17 +196,19 @@ export default async function BloomPage({ params }: BloomPageProps) {
                       {Array.from({ length: 12 }).map((_, i) => (
                         <div
                           key={i}
-                          className={`flex-1 h-6 rounded-sm ${
+                          className={`flex-1 h-6 rounded-sm flex items-center justify-center text-[10px] leading-none ${
                             plant.bloomMonths.includes(i + 1)
-                              ? "bg-[#4A7C59]"
-                              : "bg-muted"
+                              ? "bg-[#4A7C59] text-white font-medium"
+                              : "bg-muted text-muted-foreground"
                           }`}
                           title={
                             plant.bloomMonths.includes(i + 1)
                               ? `${monthLabel(i + 1)}: bloei`
                               : `${monthLabel(i + 1)}: geen bloei`
                           }
-                        />
+                        >
+                          {monthLabel(i + 1)}
+                        </div>
                       ))}
                     </div>
                     <BloomMonthEditor
