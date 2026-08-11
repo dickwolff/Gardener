@@ -1,8 +1,10 @@
 import { getGarden } from "@/lib/data";
 import { getDefaultUser } from "@/lib/data";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { GardenEditor } from "@/components/garden-editor";
 import { Header } from "@/components/header";
+import { Button } from "@/components/ui/button";
 
 interface GardenPageProps {
   params: Promise<{ id: string }>;
@@ -34,6 +36,18 @@ export default async function GardenPage({ params }: GardenPageProps) {
             <p className="text-muted-foreground text-sm">
               {garden.width}m x {garden.height}m
             </p>
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/gardens/${garden.id}/plants`}>
+              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+                Plantenlijst
+              </Button>
+            </Link>
+            <Link href={`/gardens/${garden.id}/bloom`}>
+              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+                Bloei-overzicht
+              </Button>
+            </Link>
           </div>
         </div>
 

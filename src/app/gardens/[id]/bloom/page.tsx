@@ -1,0 +1,233 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getGarden } from "@/lib/data";
+import { Header } from "@/components/header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  parseBloomMonths,
+  getGapMonths,
+  getBloomDensity,
+  monthLabel,
+} from "@/lib/bloom";
+
+interface BloomPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function BloomPage({ params }: BloomPageProps) {
+  const { id } = await params;
+  let garden;
+
+  try {
+    garden = await getGarden(id);
+  } catch {
+    notFound();
+  }
+
+  const bloomingPlants = garden.plants
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      commonName: p.commonName,
+      bloomMonths: parseBloomMonths(p.bloomTime),
+    }))
+    .filter((p) => p.bloomMonths.length > 0);
+
+  const plantsWithoutBloomData = garden.plants.filter(
+    (p) => !p.bloomTime || parseBloomMonths(p.bloomTime).length === 0
+  );
+
+  const density = getBloomDensity(bloomingPlants);
+  const gapMonths = getGapMonths(bloomingPlants);
+  const maxDensity = Math.max(...density, 1);
+
+  return (
+    <>
+      <Header />
+      <main className="flex-1 mx-auto max-w-[1280px] w-full px-8 py-16">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <Link
+              href={`/gardens/${garden.id}`}
+              className="text-muted-foreground text-sm hover:text-foreground"
+            >
+              Terug naar {garden.name}
+            </Link>
+            <h1
+              className="text-4xl text-[#2E2E2E] mt-1"
+              style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+            >
+              Bloei-overzicht
+            </h1>
+          </div>
+          <Link href={`/gardens/${garden.id}`}>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
+              Naar tuineditor
+            </Button>
+          </Link>
+        </div>
+
+        {bloomingPlants.length === 0 && plantsWithoutBloomData.length === 0 ? (
+          <Card className="rounded-2xl border-0">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-muted-foreground mb-4">
+                Nog geen planten in deze tuin.
+              </p>
+              <Link href={`/gardens/${garden.id}`}>
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
+                  Planten plaatsen
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-8">
+            <Card className="rounded-2xl border-0">
+              <CardHeader>
+                <CardTitle
+                  className="text-xl text-[#2E2E2E]"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+                >
+                  Bloeidichtheid per maand
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-end gap-1 h-32 mb-2">
+                  {density.map((count, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 flex flex-col items-center group relative"
+                    >
+                      <span className="text-xs text-muted-foreground mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {count}
+                      </span>
+                      <div
+                        className={`w-full rounded-t-md transition-all ${
+                          gapMonths.includes(i + 1)
+                            ? "bg-amber-200"
+                            : "bg-[#4A7C59]"
+                        }`}
+                        style={{
+                          height: `${Math.max((count / maxDensity) * 100, 4)}%`,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-1">
+                  {density.map((_, i) => (
+                    <span
+                      key={i}
+                      className={`flex-1 text-center text-xs ${
+                        gapMonths.includes(i + 1)
+                          ? "text-amber-600 font-medium"
+                          : "text-muted-foreground"
+                      }`}
+                    >
+                      {monthLabel(i + 1)}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {gapMonths.length > 0 && (
+              <Card className="rounded-2xl border-2 border-amber-200 bg-amber-50/50">
+                <CardContent className="py-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-600 font-medium">
+                      Bloei-gaten gevonden:
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      In {gapMonths.length} maand{ gapMonths.length > 1 ? "en" : "" } bloeit er niets
+                      ({gapMonths.map((m) => monthLabel(m)).join(", ")})
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {gapMonths.length === 0 && bloomingPlants.length > 0 && (
+              <Card className="rounded-2xl border-2 border-[#4A7C59] bg-[#4A7C59]/5">
+                <CardContent className="py-4">
+                  <p className="text-[#4A7C59] font-medium">
+                    Geen bloei-gaten! Het hele jaar door bloei in je tuin.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card className="rounded-2xl border-0">
+              <CardHeader>
+                <CardTitle
+                  className="text-xl text-[#2E2E2E]"
+                  style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+                >
+                  Planten per bloeiperiode
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {bloomingPlants.map((plant) => (
+                  <div
+                    key={plant.id}
+                    className="flex items-center gap-4 py-2 border-b border-border last:border-0"
+                  >
+                    <div className="w-36 shrink-0">
+                      <p className="text-sm font-medium truncate">{plant.name}</p>
+                      {plant.commonName && (
+                        <p className="text-xs text-muted-foreground truncate italic">
+                          {plant.commonName}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex-1 flex gap-1">
+                      {Array.from({ length: 12 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`flex-1 h-6 rounded-sm ${
+                            plant.bloomMonths.includes(i + 1)
+                              ? "bg-[#4A7C59]"
+                              : "bg-muted"
+                          }`}
+                          title={
+                            plant.bloomMonths.includes(i + 1)
+                              ? `${monthLabel(i + 1)}: bloei`
+                              : `${monthLabel(i + 1)}: geen bloei`
+                          }
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {plantsWithoutBloomData.length > 0 && (
+              <Card className="rounded-2xl border-0">
+                <CardHeader>
+                  <CardTitle
+                    className="text-xl text-[#2E2E2E]"
+                    style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+                  >
+                    Planten zonder bloeidata
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {plantsWithoutBloomData.map((p) => (
+                      <Badge key={p.id} variant="secondary" className="rounded-xl">
+                        {p.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+      </main>
+    </>
+  );
+}
