@@ -5,8 +5,9 @@ import { Header } from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { refreshBloomData } from "@/actions/bloom-actions";
 import {
-  parseBloomMonths,
+  safeParseBloom,
   getGapMonths,
   getBloomDensity,
   monthLabel,
@@ -26,17 +27,18 @@ export default async function BloomPage({ params }: BloomPageProps) {
     notFound();
   }
 
-  const bloomingPlants = garden.plants
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      commonName: p.commonName,
-      bloomMonths: parseBloomMonths(p.bloomTime),
-    }))
-    .filter((p) => p.bloomMonths.length > 0);
+  const gardenPlants = garden.plants ?? [];
 
-  const plantsWithoutBloomData = garden.plants.filter(
-    (p) => !p.bloomTime || parseBloomMonths(p.bloomTime).length === 0
+  const plantsWithBloom = gardenPlants.map((p) => ({
+    id: p.id,
+    name: p.name,
+    commonName: p.commonName,
+    bloomMonths: safeParseBloom(p.bloomTime),
+  }));
+
+  const bloomingPlants = plantsWithBloom.filter((p) => p.bloomMonths.length > 0);
+  const plantsWithoutBloomData = gardenPlants.filter(
+    (p) => !p.bloomTime || safeParseBloom(p.bloomTime).length === 0
   );
 
   const density = getBloomDensity(bloomingPlants);
@@ -62,11 +64,19 @@ export default async function BloomPage({ params }: BloomPageProps) {
               Bloei-overzicht
             </h1>
           </div>
-          <Link href={`/gardens/${garden.id}`}>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
-              Naar tuineditor
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <form action={refreshBloomData}>
+              <input type="hidden" name="gardenId" value={garden.id} />
+              <Button type="submit" variant="outline" className="rounded-2xl border-2 border-input">
+                Herlaad bloeidata
+              </Button>
+            </form>
+            <Link href={`/gardens/${garden.id}`}>
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
+                Naar tuineditor
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {bloomingPlants.length === 0 && plantsWithoutBloomData.length === 0 ? (

@@ -40,6 +40,14 @@ const MONTH_NAMES = [
   "jul", "aug", "sep", "okt", "nov", "dec",
 ];
 
+export function safeParseBloom(bloomTime: string | null): number[] {
+  try {
+    return parseBloomMonths(bloomTime);
+  } catch {
+    return [];
+  }
+}
+
 export function parseBloomMonths(bloomTime: string | null): number[] {
   if (!bloomTime) return [];
 
