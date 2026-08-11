@@ -38,7 +38,7 @@ plant has x/y coords, TREFLE id, cached info (name, sun, water, bloom, image)
 
 - **User**: id, name, email
 - **Garden**: id, name, userId, width, height, scale, createdAt
-- **Zone**: id, gardenId, type (grass/border/terrace/fence/pond/path/custom), name, color, points (JSON polygon), order
+- **Zone**: id, gardenId, type (grass/border/terrace/fence/pond/path/pergola/custom), name, color, points (JSON polygon), order
 - **Plant**: id, gardenId, zoneId?, x, y, trefleId?, name, commonName, scientificName, imageUrl, watering, sunlight, bloomTime, notes, plantedAt, createdAt
 
 ## Routes
@@ -48,7 +48,8 @@ plant has x/y coords, TREFLE id, cached info (name, sun, water, bloom, image)
 | `/` | Server | Dashboard: list of your gardens |
 | `/gardens/new` | Server + Client | Create new garden form (server renders, client handles form) |
 | `/gardens/[id]` | Hybrid | Server loads garden data, client renders SVG canvas editor |
-| `/gardens/[id]/plants` | Server | Plant list for this garden with search |
+| `/gardens/[id]/plants` | Server | Plant list for this garden |
+| `/gardens/[id]/bloom` | Server | Bloom overview: flowering timeline with gap detection |
 | `/gardens/[id]/bewerken` | Hybrid | Garden detail/edit page |
 | `/api/auth/...` | NextAuth | Future auth endpoints |
 
