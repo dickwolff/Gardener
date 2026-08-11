@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { updateBloomTime } from "@/actions/plant-actions";
 import { monthLabel } from "@/lib/bloom";
 
@@ -36,16 +37,33 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
     setOpen(false);
   }
 
+  function handleOpen(open: boolean) {
+    if (open) {
+      setSelected(initialMonths);
+    }
+    setOpen(open);
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger>
-        <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
-          {label || "Bloei instellen"}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="rounded-2xl border-0 w-72 p-4">
-        <p className="text-sm mb-3 font-medium">{plantName}</p>
-        <div className="grid grid-cols-4 gap-1 mb-4">
+    <Dialog open={open} onOpenChange={handleOpen}>
+      <Button
+        variant="outline"
+        size="sm"
+        className="rounded-xl border-2 border-input h-7 text-xs"
+        onClick={() => handleOpen(true)}
+      >
+        {label || "Bloei instellen"}
+      </Button>
+      <DialogContent className="rounded-2xl border-0 sm:max-w-xs">
+        <DialogHeader>
+          <DialogTitle
+            className="text-base text-[#2E2E2E]"
+            style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+          >
+            {plantName}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="grid grid-cols-4 gap-1">
           {Array.from({ length: 12 }).map((_, i) => {
             const m = i + 1;
             const isSelected = selected.includes(m);
@@ -54,7 +72,7 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
                 key={m}
                 type="button"
                 onClick={() => toggleMonth(m)}
-                className={`text-xs py-1.5 rounded-lg border transition-colors ${
+                className={`text-xs py-2 rounded-lg border transition-colors ${
                   isSelected
                     ? "bg-[#4A7C59] text-white border-[#4A7C59]"
                     : "bg-background text-muted-foreground border-border hover:border-[#4A7C59]"
@@ -67,13 +85,13 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], label
         </div>
         <Button
           size="sm"
-          className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+          className="w-full rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 mt-2"
           onClick={handleSave}
           disabled={selected.length === 0 || saving}
         >
           {saving ? "Opslaan..." : "Opslaan"}
         </Button>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   );
 }
