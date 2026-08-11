@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
+import { parseBloomMonths, monthLabel } from "@/lib/bloom";
 import {
   Card,
   CardContent,
@@ -101,11 +102,15 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
                         {plant.watering}
                       </Badge>
                     )}
-                    {plant.bloomTime && (
-                      <Badge variant="secondary" className="rounded-xl">
-                        {plant.bloomTime}
-                      </Badge>
-                    )}
+                    {plant.bloomTime && (() => {
+                      const months = parseBloomMonths(plant.bloomTime);
+                      if (months.length === 0) return null;
+                      return (
+                        <Badge variant="secondary" className="rounded-xl">
+                          {months.map((m) => monthLabel(m)).join(", ")}
+                        </Badge>
+                      );
+                    })()}
                   </div>
                 </CardContent>
               </Card>
