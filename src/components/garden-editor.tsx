@@ -360,7 +360,8 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const sunlight = Array.isArray(detail.sunlight) ? detail.sunlight.join(", ") : "";
     const growth = detail.growth ?? {};
     const watering = growth?.watering ?? "";
-    const bloom = growth?.bloom_months ?? "";
+    const rawBloom = growth?.bloom_months;
+    const bloom = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
 
     const result = await addPlant(garden.id, selectedZoneId, {
       x: plantPlacePosition.x,
@@ -371,7 +372,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
       imageUrl: plant.image_url,
       watering: typeof watering === "string" ? watering : "",
       sunlight: typeof sunlight === "string" ? sunlight : "",
-      bloomTime: typeof bloom === "string" ? bloom : "",
+      bloomTime: bloom,
       trefleId: plant.id,
     });
 
