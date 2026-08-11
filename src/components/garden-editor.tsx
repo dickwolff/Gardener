@@ -824,7 +824,7 @@ function PlantSearchDrawer({
             Plant zoeken
           </DrawerTitle>
         </DrawerHeader>
-        <div className="px-4 pb-4 space-y-4">
+        <div className="px-6 pb-8 pt-2 space-y-5">
           <div className="flex gap-2">
             <Input
               value={query}
