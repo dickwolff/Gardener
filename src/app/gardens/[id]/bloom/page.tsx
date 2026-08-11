@@ -111,7 +111,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
                       className="flex-1 flex flex-col justify-end items-center min-w-0"
                     >
                       <div
-                        className={`w-full rounded-t-lg ${
+                        className={`w-full rounded-t-lg flex items-end justify-center pb-1 ${
                           count === 0 && gapMonths.includes(i + 1)
                             ? "bg-[#ECBA82]/30 border-2 border-[#ECBA82]"
                             : count > 0
@@ -123,10 +123,13 @@ export default async function BloomPage({ params }: BloomPageProps) {
                             ? `${Math.max((count / maxDensity) * 100, 15)}%`
                             : gapMonths.includes(i + 1) ? "8%" : "4%",
                         }}
-                      />
-                      <span className={`text-xs font-semibold mt-1.5 ${count > 0 ? "text-[#2E2E2E]" : "text-muted-foreground/30"}`}>
-                        {count || ""}
-                      </span>
+                      >
+                        {count > 0 && (
+                          <span className="text-xs font-semibold text-white">
+                            {count}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
