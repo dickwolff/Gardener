@@ -38,6 +38,11 @@ export default async function GardenPage({ params }: GardenPageProps) {
             </p>
           </div>
           <div className="flex gap-2">
+            <Link href={`/gardens/${garden.id}/overzicht`}>
+              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+                Tuin-overzicht
+              </Button>
+            </Link>
             <Link href={`/gardens/${garden.id}/plants`}>
               <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
                 Plantenlijst

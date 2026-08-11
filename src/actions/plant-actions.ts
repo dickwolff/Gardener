@@ -16,6 +16,7 @@ export async function addPlant(
     watering?: string;
     sunlight?: string;
     bloomTime?: string;
+    pruningTime?: string;
     trefleId?: number;
   }
 ) {
@@ -32,6 +33,7 @@ export async function addPlant(
       watering: data.watering,
       sunlight: data.sunlight,
       bloomTime: data.bloomTime,
+      pruningTime: data.pruningTime,
       trefleId: data.trefleId,
     },
   });
@@ -64,6 +66,20 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
   });
 
   revalidatePath(`/gardens/${plant.gardenId}/bloom`);
+  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
+  return { success: true };
+}
+
+export async function updatePruningTime(plantId: string, months: number[]) {
+  const pruningTime = months.join(",");
+
+  const plant = await prisma.plant.update({
+    where: { id: plantId },
+    data: { pruningTime },
+  });
+
+  revalidatePath(`/gardens/${plant.gardenId}/bloom`);
+  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
   return { success: true };
 }
 
@@ -74,6 +90,7 @@ export async function updateSunlight(plantId: string, sunlight: string) {
   });
 
   revalidatePath(`/gardens/${plant.gardenId}/bloom`);
+  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
   revalidatePath(`/gardens/${plant.gardenId}/plants`);
   return { success: true };
 }

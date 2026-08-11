@@ -48,6 +48,7 @@ plant has x/y coords, TREFLE id, cached info (name, sun, water, bloom, image)
 | `/` | Server | Dashboard: list of your gardens |
 | `/gardens/new` | Server + Client | Create new garden form (server renders, client handles form) |
 | `/gardens/[id]` | Hybrid | Server loads garden data, client renders SVG canvas editor |
+| `/gardens/[id]/overzicht` | Server | Tuin-overzicht: bloei- én snoei-overzicht met maandgrafieken |
 | `/gardens/[id]/plants` | Server | Plant list for this garden |
 | `/gardens/[id]/bloom` | Server | Bloom overview: flowering timeline with gap detection |
 | `/gardens/[id]/bewerken` | Hybrid | Garden detail/edit page |

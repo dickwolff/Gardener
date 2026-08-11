@@ -103,16 +103,20 @@ export function getGapMonths(bloomingPlants: { bloomMonths: number[] }[]): numbe
   return gaps;
 }
 
-export function getBloomDensity(bloomingPlants: { bloomMonths: number[] }[]): number[] {
+export function getMonthDensity(plants: { months: number[] }[]): number[] {
   const density = new Array(13).fill(0);
 
-  for (const plant of bloomingPlants) {
-    for (const month of plant.bloomMonths) {
+  for (const plant of plants) {
+    for (const month of plant.months) {
       density[month]++;
     }
   }
 
   return density.slice(1);
+}
+
+export function getBloomDensity(bloomingPlants: { bloomMonths: number[] }[]): number[] {
+  return getMonthDensity(bloomingPlants.map((p) => ({ months: p.bloomMonths })));
 }
 
 export function monthLabel(m: number): string {

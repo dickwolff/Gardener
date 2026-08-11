@@ -59,6 +59,7 @@ model Plant {
   watering       String?
   sunlight       String?
   bloomTime      String?
+  pruningTime    String?
   notes          String?
   plantedAt      DateTime?
   createdAt      DateTime  @default(now())
