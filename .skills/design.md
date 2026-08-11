@@ -1,5 +1,8 @@
 # Organic design skill for AI agents
 
+source: https://www.typeui.sh/design-skills/organic
+components: https://organic-typeui-e99e1d68.vercel.app/components
+
 Overview
 
 Organic is a soft, editorial design system for products that should feel literary, warm, and unhurried. It pairs a paper-gray page with borderless white panels, a deep-teal hero, pale amber actions, generous rounded geometry, and serif-led typography. The visual language is expressive enough for a memorable brand while remaining structured enough for dense product interfaces.
