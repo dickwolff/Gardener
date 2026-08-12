@@ -37,8 +37,8 @@ export function DeleteGardenButton({ gardenId, variant = "default" }: DeleteGard
     variant === "icon" ? (
       <Button
         size="icon-sm"
-        variant="outline"
-        className="rounded-full border-border text-muted-foreground hover:text-destructive hover:border-destructive hover:bg-destructive/10"
+        variant="destructive"
+        className="rounded-full"
         aria-label="Tuin verwijderen"
       >
         <Trash2 className="w-4 h-4" />
