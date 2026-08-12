@@ -191,6 +191,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     plantId: string;
     start: Point;
     current: Point;
+    dragging: boolean;
   } | null>(null);
   const plantDragRef = useRef(plantDragState);
   const plantHandledRef = useRef(false);
@@ -274,7 +275,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
 
       const nearbyPlant = findNearbyPlant(svgPos);
       if (nearbyPlant) {
-        plantDragRef.current = { plantId: nearbyPlant.id, start: svgPos, current: svgPos };
+        plantDragRef.current = { plantId: nearbyPlant.id, start: svgPos, current: svgPos, dragging: false };
         plantHandledRef.current = false;
         setSelectedPlantId(nearbyPlant.id);
         setSelectedZoneId(null);
@@ -299,12 +300,9 @@ export function GardenEditor({ garden }: GardenEditorProps) {
       }
 
       if (plantDragRef.current) {
-        const { plantId, start, current } = plantDragRef.current;
-        const dx = current.x - start.x;
-        const dy = current.y - start.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const { plantId, current, dragging } = plantDragRef.current;
 
-        if (distance > 0.1) {
+        if (dragging) {
           const zone = zones.find((z) => {
             const pts = JSON.parse(z.points) as Point[];
             return pointInPolygon(current, pts);
@@ -315,13 +313,11 @@ export function GardenEditor({ garden }: GardenEditorProps) {
               p.id === plantId ? { ...p, x: current.x, y: current.y, zoneId: zone?.id ?? null } : p
             )
           );
-        } else {
-          setPlantDetailOpen(true);
+          plantHandledRef.current = true;
         }
 
         plantDragRef.current = null;
         setPlantDragState(null);
-        plantHandledRef.current = true;
       }
     },
     [dragState, zones]
@@ -409,8 +405,20 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     }
 
     if (plantDragRef.current) {
+      const { start } = plantDragRef.current;
       const newPos = snapToGrid(svgPos.x, svgPos.y);
-      plantDragRef.current = { ...plantDragRef.current, current: newPos };
+      const dx = newPos.x - start.x;
+      const dy = newPos.y - start.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (!plantDragRef.current.dragging && distance > 0.05) {
+        plantDragRef.current = { ...plantDragRef.current, dragging: true, current: newPos };
+      } else if (plantDragRef.current.dragging) {
+        plantDragRef.current = { ...plantDragRef.current, current: newPos };
+      } else {
+        return;
+      }
+
       setPlantDragState({ ...plantDragRef.current });
       return;
     }
@@ -781,7 +789,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
             })}
 
             {plants.map((p) => {
-              const isDragging = plantDragState?.plantId === p.id;
+              const isDragging = plantDragState?.plantId === p.id && plantDragState.dragging;
               const x = isDragging ? plantDragState.current.x : p.x;
               const y = isDragging ? plantDragState.current.y : p.y;
               return (
