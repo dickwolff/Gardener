@@ -554,7 +554,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     if (!confirm("Weet je zeker dat je deze tuin wilt verwijderen? Alle zones en planten worden ook verwijderd.")) return;
     setIsDeleting(true);
     await deleteGarden(garden.id);
-    router.push("/");
+    router.push("/gardens");
   }
 
   const selectedPlant = plants.find((p) => p.id === selectedPlantId);
