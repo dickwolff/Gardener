@@ -511,7 +511,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   const viewBoxY = viewOffset.y;
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full gap-4">
       <div className="flex flex-wrap gap-2 items-center">
         <ToolButton active={tool === "select"} onClick={() => { setTool("select"); setDrawingPoints([]); setDrawingZoneId(null); }}>
           Selecteren
@@ -619,12 +619,13 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         </div>
       </div>
 
-      <Card className="rounded-2xl border-0 overflow-hidden py-0">
-        <CardContent className="p-0">
+      <Card className="rounded-2xl border-0 overflow-hidden py-0 flex-1 min-h-0">
+        <CardContent className="p-0 h-full">
           <svg
             ref={svgRef}
             viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
-            className="w-full h-auto min-h-[500px] cursor-crosshair select-none"
+            className="w-full h-full cursor-crosshair select-none"
+            preserveAspectRatio="xMidYMid meet"
             onMouseDown={handleSvgMouseDown}
             onClick={handleSvgClick}
             onMouseMove={handleSvgMouseMove}
