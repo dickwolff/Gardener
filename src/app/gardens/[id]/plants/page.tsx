@@ -50,7 +50,7 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
           </Link>
           <div className="flex items-center justify-between mt-1">
             <h1
-              className="text-4xl text-[#2E2E2E]"
+               className="text-3xl text-[#2E2E2E]"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
               Planten in {garden.name}

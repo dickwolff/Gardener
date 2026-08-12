@@ -40,17 +40,12 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
             Terug naar {garden.name}
           </Link>
           <div className="flex items-center justify-between mt-1">
-            <div>
-              <h1
-                className="text-3xl text-[#2E2E2E]"
-                style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
-              >
-                Bewerk {garden.name}
-              </h1>
-              <p className="text-muted-foreground text-sm">
-                {garden.width}m x {garden.height}m
-              </p>
-            </div>
+            <h1
+              className="text-3xl text-[#2E2E2E]"
+              style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+            >
+              Bewerk {garden.name}
+            </h1>
             <Link href={`/gardens/${garden.id}/plants`}>
               <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
                 <Sprout className="w-4 h-4" />

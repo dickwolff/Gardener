@@ -26,7 +26,7 @@ export default async function GardensPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1
-              className="text-4xl text-[#2E2E2E]"
+              className="text-3xl text-[#2E2E2E]"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
               Mijn tuinen
