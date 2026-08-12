@@ -7,7 +7,7 @@ import { PencilRuler, PenTool, Sprout, CalendarDays, Flower2 } from "lucide-reac
 
 function GardenIllustration() {
   const topLeftPlants = [
-    [73, 80], [115, 80], [157, 80],
+    [115, 80], [157, 80],
     [73, 142], [115, 142], [157, 142],
   ];
   const bottomLeftPlants = [
