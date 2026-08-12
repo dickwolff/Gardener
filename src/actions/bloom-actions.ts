@@ -47,6 +47,5 @@ export async function refreshBloomData(formData: FormData) {
     }
   }
 
-  revalidatePath(`/gardens/${gardenId}/bloom`);
   revalidatePath(`/gardens/${gardenId}`);
 }

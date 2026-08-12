@@ -5,7 +5,7 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { BloomOverview } from "@/components/bloom-overview";
 import { PruningOverview } from "@/components/pruning-overview";
-import { ChevronLeft, Sprout, Flower2, PencilRuler } from "lucide-react";
+import { ChevronLeft, Sprout, PencilRuler } from "lucide-react";
 
 interface OverviewPageProps {
   params: Promise<{ id: string }>;
@@ -45,12 +45,6 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
                 <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
                   <Sprout className="w-4 h-4" />
                   Plantenlijst
-                </Button>
-              </Link>
-              <Link href={`/gardens/${garden.id}/bloom`}>
-                <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
-                  <Flower2 className="w-4 h-4" />
-                  Bloei-overzicht
                 </Button>
               </Link>
               <Link href={`/gardens/${garden.id}/editor`}>

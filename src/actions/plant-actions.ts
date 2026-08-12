@@ -65,7 +65,6 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
     data: { bloomTime },
   });
 
-  revalidatePath(`/gardens/${plant.gardenId}/bloom`);
   revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true };
 }
@@ -88,7 +87,6 @@ export async function updateSunlight(plantId: string, sunlight: string) {
     data: { sunlight },
   });
 
-  revalidatePath(`/gardens/${plant.gardenId}/bloom`);
   revalidatePath(`/gardens/${plant.gardenId}/plants`);
   revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true };

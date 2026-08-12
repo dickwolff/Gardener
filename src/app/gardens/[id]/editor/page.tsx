@@ -48,11 +48,6 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
                 Plantenlijst
               </Button>
             </Link>
-            <Link href={`/gardens/${garden.id}/bloom`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
-                Bloei-overzicht
-              </Button>
-            </Link>
           </div>
         </div>
 
