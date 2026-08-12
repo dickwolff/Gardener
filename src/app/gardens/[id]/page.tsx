@@ -36,7 +36,7 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
               className="text-4xl text-[#2E2E2E] mt-1"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
-              Tuin-overzicht
+              Tuin-overzicht ({garden.name})
             </h1>
           </div>
           <div className="flex gap-2">
