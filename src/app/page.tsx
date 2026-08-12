@@ -123,7 +123,7 @@ export default function HomePage() {
               Een tuin begint met een idee
             </h2>
             <p className="text-muted-foreground leading-relaxed md:col-span-3 text-lg">
-              Plot zet je tuin op de kaart — letterlijk. Teken de omtrek, verdeel je tuin in zones
+              Plot zet je tuin op de kaart, letterlijk. Teken de omtrek, verdeel je tuin in zones
               en geef elke plant een plek. Zo zie je in één oogopslag wat waar groeit, bloeit en
               gesnoeid wil worden.
             </p>

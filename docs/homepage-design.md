@@ -1,10 +1,10 @@
-# Design brief — Homepage Plot (/)
+# Design brief - Homepage Plot (/)
 
 ## 1. Doel
 Een overtuigende landing/introductiepagina die het product verkoopt: wat Plot is, waarom het de moeite waard is, en direct uitnodigt om te beginnen. De pagina is de eerste indruk voor een openbaar publiek.
 
 ## 2. Doelgroep
-Iedere tuinliefhebber, van hobbyist tot beginnende ontwerper. Geen aannames over voorkennis — de pagina legt in eenvoudige, warme taal uit wat de app doet.
+Iedere tuinliefhebber, van hobbyist tot beginnende ontwerper. Geen aannames over voorkennis. De pagina legt in eenvoudige, warme taal uit wat de app doet.
 
 ## 3. Toon & stijl
 Trouw aan het Organic design systeem: warm, rustig, editorial en onhaast.
@@ -21,8 +21,8 @@ Trouw aan het Organic design systeem: warm, rustig, editorial en onhaast.
 Secundair: **"Bekijk mijn tuinen"** -> `/gardens`
 
 ## 5. Uitgelichte features (alleen deze twee)
-- **Tuin ontwerper** — teken de omtrek, voeg zones toe, sleep planten op een canvas
-- **Plantenbibliotheek** — zoek planten via TREFLE, krijg naam, foto en verzorging
+- **Tuin ontwerper**: teken de omtrek, voeg zones toe, sleep planten op een canvas
+- **Plantenbibliotheek**: zoek planten via TREFLE, krijg naam, foto en verzorging
 
 ## 6. Pagina-opbouw
 
@@ -41,7 +41,7 @@ Warme, korte copy. Geen vakjargon. Koppen in serif, zin over hoe de tuin "tot bl
 ## 8. Technische vereisten
 - Server Component (`src/app/page.tsx`), geen client nodig
 - Bestaande shadcn/ui tokens + Organic kleuren, geen nieuwe hex-codes los in markup
-- Header: lichte variant op de landing (paper-achtergrond boven de teal hero) — anders valt de teal header weg tegen de teal hero
+- Header: lichte variant op de landing (paper-achtergrond boven de teal hero). Anders valt de teal header weg tegen de teal hero
 - Responsive: secties 112px padding desktop / 64px mobiel, hero-tekst schaalt
 
 ## 9. Succescriteria
