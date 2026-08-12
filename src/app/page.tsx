@@ -17,7 +17,7 @@ function GardenIllustration() {
   ];
   const topRightPlants = [
     [323, 80], [365, 80], [407, 80],
-    [323, 142], [365, 142], [407, 142],
+    [323, 142], [407, 142],
   ];
   const bottomRightPlants = [
     [325, 249], [365, 249], [405, 249],
