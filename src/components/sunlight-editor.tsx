@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { Sun, CloudSun, Cloud } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { updateSunlight } from "@/actions/plant-actions";
 
@@ -22,7 +22,7 @@ interface SunlightEditorProps {
   plantId: string;
   plantName: string;
   currentSunlight: string | null;
-  children: ReactNode;
+  children: ReactElement;
 }
 
 export function SunlightEditor({ plantId, plantName, currentSunlight, children }: SunlightEditorProps) {
@@ -40,9 +40,7 @@ export function SunlightEditor({ plantId, plantName, currentSunlight, children }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex">
-        {children}
-      </button>
+      <DialogTrigger render={children} />
       <DialogContent className="rounded-2xl border-0 sm:max-w-xs">
         <DialogHeader>
           <DialogTitle
