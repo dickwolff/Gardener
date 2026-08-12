@@ -52,16 +52,16 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
               Overzicht {garden.name}
             </h1>
             <div className="flex gap-2">
-              <Link href={`/gardens/${garden.id}/plants`}>
-                <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
-                  <Sprout className="w-4 h-4" />
-                  Plantenlijst
-                </Button>
-              </Link>
               <Link href={`/gardens/${garden.id}/editor`}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
                   <PencilRuler className="w-4 h-4" />
                   Tuineditor
+                </Button>
+              </Link>
+              <Link href={`/gardens/${garden.id}/plants`}>
+                <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
+                  <Sprout className="w-4 h-4" />
+                  Plantenlijst
                 </Button>
               </Link>
             </div>
