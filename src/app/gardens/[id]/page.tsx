@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { BloomOverview } from "@/components/bloom-overview";
 import { PruningOverview } from "@/components/pruning-overview";
 import { ChevronLeft, Sprout, PencilRuler } from "lucide-react";
+import { DeleteGardenButton } from "@/components/delete-garden-button";
 
 interface OverviewPageProps {
   readonly params: Promise<{ id: string }>;
@@ -64,6 +65,7 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
                   Plantenlijst
                 </Button>
               </Link>
+              <DeleteGardenButton gardenId={garden.id} />
             </div>
           </div>
         </div>

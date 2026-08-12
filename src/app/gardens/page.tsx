@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { DeleteGardenButton } from "@/components/delete-garden-button";
 
 export const metadata: Metadata = {
   title: "Mijn tuinen"
@@ -65,16 +66,21 @@ export default async function GardensPage() {
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {gardens.map((garden) => (
-              <Link key={garden.id} href={`/gardens/${garden.id}`} className="group">
-                <Card className="rounded-2xl h-full transition-shadow hover:shadow-md border-0">
-                  <CardHeader>
-                    <CardTitle
-                      className="text-xl text-[#2E2E2E]"
-                      style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
-                    >
-                      {garden.name}
-                    </CardTitle>
-                  </CardHeader>
+              <Card key={garden.id} className="rounded-2xl h-full transition-shadow hover:shadow-md border-0">
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <Link href={`/gardens/${garden.id}`} className="flex-1 min-w-0">
+                      <CardTitle
+                        className="text-xl text-[#2E2E2E]"
+                        style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+                      >
+                        {garden.name}
+                      </CardTitle>
+                    </Link>
+                    <DeleteGardenButton gardenId={garden.id} variant="icon" />
+                  </div>
+                </CardHeader>
+                <Link href={`/gardens/${garden.id}`} className="block">
                   <CardContent>
                     <div className="flex gap-2 flex-wrap">
                       <Badge variant="secondary" className="rounded-xl">
@@ -85,8 +91,8 @@ export default async function GardensPage() {
                       </Badge>
                     </div>
                   </CardContent>
-                </Card>
-              </Link>
+                </Link>
+              </Card>
             ))}
           </div>
         )}

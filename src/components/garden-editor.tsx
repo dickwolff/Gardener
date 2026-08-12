@@ -23,7 +23,6 @@ import {
   createZone,
   updateZone,
   deleteZone,
-  deleteGarden,
 } from "@/actions/garden-actions";
 import {
   addPlant,
@@ -32,7 +31,6 @@ import {
   searchPlants,
   getPlantDetail,
 } from "@/actions/plant-actions";
-import { useRouter } from "next/navigation";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { safeParseBloom } from "@/lib/bloom";
 
@@ -99,7 +97,6 @@ interface GardenEditorProps {
 }
 
 export function GardenEditor({ garden }: GardenEditorProps) {
-  const router = useRouter();
   const svgRef = useRef<SVGSVGElement>(null);
 
   const [tool, setTool] = useState<Tool>("select");
@@ -118,7 +115,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   const offsetRef = useRef(viewOffset);
 
   const [boundaryPoints, setBoundaryPoints] = useState<Point[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
   const initialFitDone = useRef(false);
 
   useEffect(() => {
@@ -550,13 +546,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     setPlantDetailOpen(false);
   }
 
-  async function handleDeleteGarden() {
-    if (!confirm("Weet je zeker dat je deze tuin wilt verwijderen? Alle zones en planten worden ook verwijderd.")) return;
-    setIsDeleting(true);
-    await deleteGarden(garden.id);
-    router.push("/gardens");
-  }
-
   const selectedPlant = plants.find((p) => p.id === selectedPlantId);
 
   const viewBoxWidth = garden.width / zoom;
@@ -661,15 +650,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
             </Button>
           )}
 
-          <Button
-            size="sm"
-            variant="destructive"
-            className="rounded-xl"
-            onClick={handleDeleteGarden}
-            disabled={isDeleting}
-          >
-            {isDeleting ? "Bezig..." : "Tuin verwijderen"}
-          </Button>
         </div>
       </div>
 
