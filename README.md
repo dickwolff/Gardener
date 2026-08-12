@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="/public/icon.svg" alt="Plot logo" width="64" height="64">
+  <h1>Plot</h1>
+  <p>Ontwerp, teken en beheer je tuin — plant voor plant, boom voor boom.</p>
+  <p><a href="https://example.com">Bekijk Plot op example.com</a></p>
+</div>
 
-## Getting Started
+## Wat is Plot?
 
-First, run the development server:
+Plot is een webapp waarmee je je tuin op de kaart zet. Je tekent de omtrek, verdeelt de ruimte in zones (zon, schaduw, borders) en plaatst planten en bomen die je uit de bibliotheek haalt. Vervolgens houd je eenvoudig bij wanneer alles bloeit en gesnoeid moet worden.
+
+### Wat kun je ermee?
+
+- **Tuin ontwerpen** — teken de omtrek en zones op een canvas.
+- **Planten en bomen toevoegen** — zoek via een plantenbibliotheek en plaats ze op de juiste plek.
+- **Bloei-overzicht** — zie in één oogopslag wanneer je tuin in bloei staat.
+- **Snoei-overzicht** — plan en volg snoeimomenten per plant.
+
+## Tech stack
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)
+- [Prisma](https://www.prisma.io/) met SQLite
+- [Base UI](https://base-ui.com/) component primitives
+
+---
+
+## Zelf draaien
+
+### Vereisten
+
+- Node.js 20+
+- npm
+
+### Installatie
+
+```bash
+npm install
+```
+
+### Omgevingsvariabelen
+
+Maak een `.env` bestand in de root en vul de volgende waarden in:
+
+```env
+# Database (optioneel, default is SQLite)
+DATABASE_URL="file:./prisma/dev.db"
+
+# Trefle API key — nodig voor de plantenbibliotheek
+# Haal een gratis key op via https://trefle.io
+TREFLE_API_TOKEN=your_trefle_token_here
+
+# Perenual API key — alternatief voor planten details
+# Haal een key op via https://perenual.com
+PERENUAL_API_KEY=your_perenual_key_here
+```
+
+### Database klaarzetten
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### Development server starten
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open vervolgens [http://localhost:3000](http://localhost:3000) in je browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Beschikbare scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Script | Beschrijving |
+|---|---|
+| `npm run dev` | Start de development server |
+| `npm run build` | Bouwt de app voor productie |
+| `npm run lint` | Voert ESLint uit |
+| `npm run format` | Formatteert code met Prettier |
+| `npx prisma generate` | Genereert de Prisma client |
+| `npx prisma db push` | Synchroniseert het schema met de database |
+| `npx prisma studio` | Opent Prisma Studio |
