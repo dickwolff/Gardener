@@ -11,7 +11,7 @@ export function Footer() {
           </span>
         </div>
         <p className="text-sm text-muted-foreground text-center">
-          Ontwerp, teken en beheer je tuinen.
+          Tuinontwerp & beheer
         </p>
         <hr className="w-16 border-border my-2" />
         <p className="text-xs text-muted-foreground">

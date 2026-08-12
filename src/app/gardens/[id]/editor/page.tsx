@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getGarden } from "@/lib/data";
 import { getDefaultUser } from "@/lib/data";
 import { notFound } from "next/navigation";
@@ -7,8 +8,12 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Sprout } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "Editor"
+}
+
 interface GardenEditorPageProps {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }
 
 export default async function GardenEditorPage({ params }: GardenEditorPageProps) {

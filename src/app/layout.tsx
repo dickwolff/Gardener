@@ -9,7 +9,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Plot",
+  title: {
+    template: "%s | Plot",
+    default: `Plot - Tuinontwerp & beheer`,
+  },
   description: "Ontwerp je tuin, plaats planten of bomen, en houd bij wat waar groeit",
   icons: {
     icon: "/logo.svg",

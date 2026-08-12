@@ -9,6 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createGarden } from "@/actions/garden-actions";
 
+// export const metadata: Metadata = {
+//   title: "Nieuwe tuin"
+// }
+
 export default function NewGardenPage() {
   const router = useRouter();
   const [error, setError] = useState("");

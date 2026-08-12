@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getGarden } from "@/lib/data";
@@ -15,8 +16,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+export const metadata: Metadata = {
+  title: "Plantenlijst"
+}
+
 interface PlantsPageProps {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }
 
 export default async function PlantsPage({ params }: PlantsPageProps) {

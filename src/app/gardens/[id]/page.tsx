@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getGarden } from "@/lib/data";
@@ -8,7 +9,11 @@ import { PruningOverview } from "@/components/pruning-overview";
 import { ChevronLeft, Sprout, PencilRuler } from "lucide-react";
 
 interface OverviewPageProps {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
+}
+
+export const metadata: Metadata = {
+  title: "Tuin-overzicht"
 }
 
 export default async function OverviewPage({ params }: OverviewPageProps) {

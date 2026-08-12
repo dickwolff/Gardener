@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import { getGardens } from "@/lib/data";
@@ -11,13 +12,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+export const metadata: Metadata = {
+  title: "Mijn tuinen"
+}
+
 export default async function GardensPage() {
   const gardens = await getGardens();
 
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-16">
+      <main className="flex-1 mx-auto max-w-7xl w-full px-12 py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1

@@ -81,7 +81,7 @@ export default function HomePage() {
         <section className="bg-secondary text-secondary-foreground rounded-b-[80px]">
           <div className="mx-auto max-w-[1280px] w-full px-6 md:px-12 py-20 md:py-28 grid lg:grid-cols-2 gap-14 items-center">
             <div className="space-y-6">
-              <p className="text-primary text-sm font-medium">Tuinontwerp & plantenbeheer</p>
+              <p className="text-primary text-sm font-medium">Tuinontwerp & beheer</p>
               <h1
                 className="text-4xl md:text-5xl xl:text-6xl text-white leading-[1.08]"
                 style={{ fontFamily: "var(--font-heading)" }}
