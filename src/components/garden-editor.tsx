@@ -759,17 +759,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                     opacity={0.7}
                   />
                   {renderZonePattern(z.type, pts)}
-                  <text
-                    x={pts.reduce((s, p) => s + p.x, 0) / pts.length}
-                    y={pts.reduce((s, p) => s + p.y, 0) / pts.length}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={0.3}
-                    fill="#57564C"
-                    style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
-                  >
-                    {z.name || colors.label}
-                  </text>
                 </g>
               );
             })}
