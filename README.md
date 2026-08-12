@@ -1,7 +1,7 @@
 <div align="center">
   <img src="/public/icon.svg" alt="Plot logo" width="64" height="64">
   <h1>Plot</h1>
-  <p>Ontwerp, teken en beheer je tuin — plant voor plant, boom voor boom.</p>
+  <p>Ontwerp, teken en beheer je tuin. Plant voor plant, boom voor boom.</p>
   <p><a href="https://example.com">Bekijk Plot op example.com</a></p>
 </div>
 
@@ -11,10 +11,10 @@ Plot is een webapp waarmee je je tuin op de kaart zet. Je tekent de omtrek, verd
 
 ### Wat kun je ermee?
 
-- **Tuin ontwerpen** — teken de omtrek en zones op een canvas.
-- **Planten en bomen toevoegen** — zoek via een plantenbibliotheek en plaats ze op de juiste plek.
-- **Bloei-overzicht** — zie in één oogopslag wanneer je tuin in bloei staat.
-- **Snoei-overzicht** — plan en volg snoeimomenten per plant.
+- **Tuin ontwerpen**: teken de omtrek en zones op een canvas.
+- **Planten en bomen toevoegen**: zoek via een plantenbibliotheek en plaats ze op de juiste plek.
+- **Bloei-overzicht**: zie in één oogopslag wanneer je tuin in bloei staat.
+- **Snoei-overzicht**: plan en volg snoeimomenten per plant.
 
 ## Tech stack
 
@@ -47,11 +47,11 @@ Maak een `.env` bestand in de root en vul de volgende waarden in:
 # Database (optioneel, default is SQLite)
 DATABASE_URL="file:./prisma/dev.db"
 
-# Trefle API key — nodig voor de plantenbibliotheek
+# Trefle API key: nodig voor de plantenbibliotheek
 # Haal een gratis key op via https://trefle.io
 TREFLE_API_TOKEN=your_trefle_token_here
 
-# Perenual API key — alternatief voor planten details
+# Perenual API key: alternatief voor planten details
 # Haal een key op via https://perenual.com
 PERENUAL_API_KEY=your_perenual_key_here
 ```
