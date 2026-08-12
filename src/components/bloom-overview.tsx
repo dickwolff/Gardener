@@ -6,7 +6,7 @@ import { BloomMonthEditor } from "@/components/bloom-month-editor";
 import { BloomBarClickable } from "@/components/bloom-bar-clickable";
 import { SunlightEditor } from "@/components/sunlight-editor";
 import { refreshBloomData } from "@/actions/bloom-actions";
-import { Sun, CloudSun, Cloud, CloudAlert } from "lucide-react";
+import { Sun, CloudSun, Cloud, CloudAlert, Flower2 } from "lucide-react";
 import {
   safeParseBloom,
   getGapMonths,
@@ -64,9 +64,10 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
     <Card className="rounded-2xl border-0">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle
-          className="text-xl text-[#2E2E2E]"
+          className="text-xl text-[#2E2E2E] flex items-center gap-2"
           style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
         >
+          <Flower2 className="w-5 h-5 text-[#4A7C59]" strokeWidth={1.5} />
           Bloei-overzicht
         </CardTitle>
         <form action={refreshBloomData}>

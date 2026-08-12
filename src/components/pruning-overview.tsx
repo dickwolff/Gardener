@@ -59,7 +59,7 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
           className="text-xl text-[#2E2E2E] flex items-center gap-2"
           style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
         >
-          <Scissors className="w-5 h-5 text-primary" strokeWidth={1.5} />
+          <Scissors className="w-5 h-5 text-[#024F46]" strokeWidth={1.5} />
           Snoei-overzicht
         </CardTitle>
       </CardHeader>
@@ -102,7 +102,7 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
 
         {pruningPlants.length > 0 && (
           <div className="flex items-center gap-2 rounded-2xl border-2 border-[#024F46] bg-[#024F46]/10 px-4 py-3">
-            <span className="text-primary font-medium">
+            <span className="text-[#024F46] font-medium">
               {pruningPlants.length} plant{pruningPlants.length > 1 ? "en" : ""} met snoeidata:
             </span>
             <span className="text-sm text-muted-foreground">
