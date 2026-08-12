@@ -5,7 +5,6 @@ import { getGardens } from "@/lib/data";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
