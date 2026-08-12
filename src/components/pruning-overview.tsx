@@ -113,53 +113,59 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
           </div>
         )}
 
-        <Collapsible title="Planten per snoeiperiode">
-          <div className="space-y-3">
-            {pruningPlants.map((plant) => (
-              <div
-                key={plant.id}
-                className="flex items-center gap-4 py-2 border-b border-border last:border-0"
-              >
-                <div className="w-36 shrink-0">
-                  <p className="text-sm font-medium truncate">{plant.name}</p>
-                  {plant.commonName && (
-                    <p className="text-xs text-muted-foreground truncate italic">
-                      {plant.commonName}
-                    </p>
-                  )}
-                </div>
-                <PruningMonthEditor plantId={plant.id} plantName={plant.name} initialMonths={plant.pruningMonths}>
-                  <PruningBarClickable months={plant.pruningMonths} />
-                </PruningMonthEditor>
+        <Collapsible title="Planten">
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">Planten per snoeiperiode</p>
+              <div className="space-y-3">
+                {pruningPlants.map((plant) => (
+                  <div
+                    key={plant.id}
+                    className="flex items-center gap-4 py-2 border-b border-border last:border-0"
+                  >
+                    <div className="w-36 shrink-0">
+                      <p className="text-sm font-medium truncate">{plant.name}</p>
+                      {plant.commonName && (
+                        <p className="text-xs text-muted-foreground truncate italic">
+                          {plant.commonName}
+                        </p>
+                      )}
+                    </div>
+                    <PruningMonthEditor plantId={plant.id} plantName={plant.name} initialMonths={plant.pruningMonths}>
+                      <PruningBarClickable months={plant.pruningMonths} />
+                    </PruningMonthEditor>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {plantsWithoutPruningData.length > 0 && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Planten zonder snoeidata</p>
+                <div className="space-y-2">
+                  {plantsWithoutPruningData.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{p.name}</p>
+                        {p.commonName && (
+                          <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
+                        )}
+                      </div>
+                      <PruningMonthEditor plantId={p.id} plantName={p.name}>
+                        <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
+                          Snoei instellen
+                        </Button>
+                      </PruningMonthEditor>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </Collapsible>
-
-        {plantsWithoutPruningData.length > 0 && (
-          <Collapsible title="Planten zonder snoeidata">
-            <div className="space-y-2">
-              {plantsWithoutPruningData.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{p.name}</p>
-                    {p.commonName && (
-                      <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
-                    )}
-                  </div>
-                  <PruningMonthEditor plantId={p.id} plantName={p.name}>
-                    <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
-                      Snoei instellen
-                    </Button>
-                  </PruningMonthEditor>
-                </div>
-              ))}
-            </div>
-          </Collapsible>
-        )}
       </CardContent>
     </Card>
   );

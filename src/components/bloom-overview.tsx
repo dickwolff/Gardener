@@ -145,77 +145,83 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
           </div>
         )}
 
-        <Collapsible title="Planten per bloeiperiode">
-          <div className="space-y-3">
-            {bloomingPlants.map((plant) => (
-              <div
-                key={plant.id}
-                className="flex items-center gap-4 py-2 border-b border-border last:border-0"
-              >
-                <div className="w-36 shrink-0">
-                  <p className="text-sm font-medium truncate">{plant.name}</p>
-                  {plant.commonName && (
-                    <p className="text-xs text-muted-foreground truncate italic">
-                      {plant.commonName}
-                    </p>
-                  )}
-                </div>
-                <BloomMonthEditor
-                  plantId={plant.id}
-                  plantName={plant.name}
-                  initialMonths={plant.bloomMonths}
-                >
-                  <BloomBarClickable months={plant.bloomMonths} />
-                </BloomMonthEditor>
-                <SunlightEditor
-                  plantId={plant.id}
-                  plantName={plant.name}
-                  currentSunlight={plant.sunlight}
-                >
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 text-xs text-muted-foreground border-0 p-0 bg-transparent"
+        <Collapsible title="Planten">
+          <div className="space-y-6">
+            <div>
+              <p className="text-sm text-muted-foreground mb-2">Planten per bloeiperiode</p>
+              <div className="space-y-3">
+                {bloomingPlants.map((plant) => (
+                  <div
+                    key={plant.id}
+                    className="flex items-center gap-4 py-2 border-b border-border last:border-0"
                   >
-                    {plant.sunlight === "full_sun" ? (
-                      <Sun className="w-3.5 h-3.5" />
-                    ) : plant.sunlight === "partial_shade" ? (
-                      <CloudSun className="w-3.5 h-3.5" />
-                    ) : plant.sunlight === "full_shade" ? (
-                      <Cloud className="w-3.5 h-3.5" />
-                    ) : (
-                      <CloudAlert className="w-3.5 h-3.5" />
-                    )}
-                  </button>
-                </SunlightEditor>
+                    <div className="w-36 shrink-0">
+                      <p className="text-sm font-medium truncate">{plant.name}</p>
+                      {plant.commonName && (
+                        <p className="text-xs text-muted-foreground truncate italic">
+                          {plant.commonName}
+                        </p>
+                      )}
+                    </div>
+                    <BloomMonthEditor
+                      plantId={plant.id}
+                      plantName={plant.name}
+                      initialMonths={plant.bloomMonths}
+                    >
+                      <BloomBarClickable months={plant.bloomMonths} />
+                    </BloomMonthEditor>
+                    <SunlightEditor
+                      plantId={plant.id}
+                      plantName={plant.name}
+                      currentSunlight={plant.sunlight}
+                    >
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-1 text-xs text-muted-foreground border-0 p-0 bg-transparent"
+                      >
+                        {plant.sunlight === "full_sun" ? (
+                          <Sun className="w-3.5 h-3.5" />
+                        ) : plant.sunlight === "partial_shade" ? (
+                          <CloudSun className="w-3.5 h-3.5" />
+                        ) : plant.sunlight === "full_shade" ? (
+                          <Cloud className="w-3.5 h-3.5" />
+                        ) : (
+                          <CloudAlert className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </SunlightEditor>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {plantsWithoutBloomData.length > 0 && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Planten zonder bloeidata</p>
+                <div className="space-y-2">
+                  {plantsWithoutBloomData.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between py-2 border-b border-border last:border-0"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{p.name}</p>
+                        {p.commonName && (
+                          <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
+                        )}
+                      </div>
+                      <BloomMonthEditor plantId={p.id} plantName={p.name}>
+                        <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
+                          Bloei instellen
+                        </Button>
+                      </BloomMonthEditor>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </Collapsible>
-
-        {plantsWithoutBloomData.length > 0 && (
-          <Collapsible title="Planten zonder bloeidata">
-            <div className="space-y-2">
-              {plantsWithoutBloomData.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center justify-between py-2 border-b border-border last:border-0"
-                >
-                  <div>
-                    <p className="text-sm font-medium">{p.name}</p>
-                    {p.commonName && (
-                      <p className="text-xs text-muted-foreground italic">{p.commonName}</p>
-                    )}
-                  </div>
-                  <BloomMonthEditor plantId={p.id} plantName={p.name}>
-                    <Button variant="outline" size="sm" className="rounded-xl border-2 border-input h-7 text-xs">
-                      Bloei instellen
-                    </Button>
-                  </BloomMonthEditor>
-                </div>
-              ))}
-            </div>
-          </Collapsible>
-        )}
       </CardContent>
     </Card>
   );
