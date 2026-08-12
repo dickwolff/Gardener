@@ -32,10 +32,6 @@ import {
   searchPlants,
   getPlantDetail,
 } from "@/actions/plant-actions";
-import {
-  searchPlantsPerenual,
-  getPlantDetailPerenual,
-} from "@/actions/perenual-actions";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, RotateCcw } from "lucide-react";
 import { safeParseBloom, monthLabel } from "@/lib/bloom";
@@ -97,7 +93,6 @@ interface PlantSearchResult {
   common_name: string;
   scientific_name: string;
   image_url: string;
-  source: "perenual" | "trefle";
 }
 
 interface GardenEditorProps {
@@ -495,21 +490,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     setPlantSearchLoading(true);
     setPlantSearchError("");
 
-    const perenualResult = await searchPlantsPerenual(plantSearchQuery);
-
-    if (perenualResult.data && Array.isArray(perenualResult.data) && perenualResult.data.length > 0) {
-      const plants: PlantSearchResult[] = perenualResult.data.map((p: Record<string, unknown>) => ({
-        id: p.id as number,
-        common_name: (p.common_name || "") as string,
-        scientific_name: (Array.isArray(p.scientific_name) ? p.scientific_name[0] : p.scientific_name || "") as string,
-        image_url: ((p.default_image as Record<string, unknown>)?.thumbnail || "") as string,
-        source: "perenual" as const,
-      }));
-      setPlantSearchResults(plants.slice(0, 20));
-      setPlantSearchLoading(false);
-      return;
-    }
-
     const trefleResult = await searchPlants(plantSearchQuery);
 
     if (trefleResult.error) {
@@ -521,7 +501,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         common_name: (p.common_name || "") as string,
         scientific_name: (p.scientific_name || "") as string,
         image_url: (p.image_url || "") as string,
-        source: "trefle" as const,
       }));
       setPlantSearchResults(plants.slice(0, 20));
     }
@@ -532,59 +511,30 @@ export function GardenEditor({ garden }: GardenEditorProps) {
   async function handlePlacePlant(plant: PlantSearchResult) {
     if (!plantPlacePosition) return;
 
-    if (plant.source === "perenual") {
-      const detailResult = await getPlantDetailPerenual(plant.id);
-      const detail = detailResult.data ?? {};
-      const sunlightArr = Array.isArray(detail.sunlight) ? detail.sunlight : [detail.sunlight].filter(Boolean);
-      const sunlight = sunlightArr.length > 0 ? sunlightArr[0] : "";
-      const watering = (detail.watering as string) ?? "";
-      const pruningArr = Array.isArray(detail.pruning_month) ? detail.pruning_month : [];
-      const pruningText = pruningArr.join(", ");
-      const pruning = safeParseBloom(pruningText).join(",");
+    const detailResult = await getPlantDetail(plant.id);
+    const detail = detailResult.data ?? {};
+    const sunlight = Array.isArray(detail.sunlight) ? detail.sunlight.join(", ") : "";
+    const trefleGrowth = extractTrefleGrowth(detail);
+    const watering = trefleGrowth?.watering ?? "";
+    const rawBloom = trefleGrowth?.bloom_months;
+    const bloomText = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
+    const bloom = safeParseBloom(bloomText).join(",");
 
-      const result = await addPlant(garden.id, selectedZoneId, {
-        x: plantPlacePosition.x,
-        y: plantPlacePosition.y,
-        name: plant.common_name || plant.scientific_name,
-        commonName: plant.common_name,
-        scientificName: plant.scientific_name,
-        imageUrl: plant.image_url,
-        watering: typeof watering === "string" ? watering : "",
-        sunlight: typeof sunlight === "string" ? sunlight : "",
-        bloomTime: "",
-        pruningTime: pruning,
-        trefleId: plant.id,
-      });
+    const result = await addPlant(garden.id, selectedZoneId, {
+      x: plantPlacePosition.x,
+      y: plantPlacePosition.y,
+      name: plant.common_name || plant.scientific_name,
+      commonName: plant.common_name,
+      scientificName: plant.scientific_name,
+      imageUrl: plant.image_url,
+      watering: typeof watering === "string" ? watering : "",
+      sunlight: typeof sunlight === "string" ? sunlight : "",
+      bloomTime: bloom,
+      trefleId: plant.id,
+    });
 
-      if (result.success && result.data) {
-        setPlants((prev) => [...prev, result.data]);
-      }
-    } else {
-      const detailResult = await getPlantDetail(plant.id);
-      const detail = detailResult.data ?? {};
-      const sunlight = Array.isArray(detail.sunlight) ? detail.sunlight.join(", ") : "";
-      const trefleGrowth = extractTrefleGrowth(detail);
-      const watering = trefleGrowth?.watering ?? "";
-      const rawBloom = trefleGrowth?.bloom_months;
-      const bloomText = Array.isArray(rawBloom) ? rawBloom.join(", ") : (typeof rawBloom === "string" ? rawBloom : "");
-      const bloom = safeParseBloom(bloomText).join(",");
-
-      const result = await addPlant(garden.id, selectedZoneId, {
-        x: plantPlacePosition.x,
-        y: plantPlacePosition.y,
-        name: plant.common_name || plant.scientific_name,
-        commonName: plant.common_name,
-        scientificName: plant.scientific_name,
-        imageUrl: plant.image_url,
-        watering: typeof watering === "string" ? watering : "",
-        sunlight: typeof sunlight === "string" ? sunlight : "",
-        bloomTime: bloom,
-        trefleId: plant.id,
-      });
-
-      if (result.success && result.data) {
-        setPlants((prev) => [...prev, result.data]);
-      }
+    if (result.success && result.data) {
+      setPlants((prev) => [...prev, result.data]);
     }
 
     setPlantSearchOpen(false);

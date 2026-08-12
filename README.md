@@ -50,10 +50,6 @@ DATABASE_URL="file:./prisma/dev.db"
 # Trefle API key: nodig voor de plantenbibliotheek
 # Haal een gratis key op via https://trefle.io
 TREFLE_API_TOKEN=your_trefle_token_here
-
-# Perenual API key: alternatief voor planten details
-# Haal een key op via https://perenual.com
-PERENUAL_API_KEY=your_perenual_key_here
 ```
 
 ### Database klaarzetten
