@@ -28,7 +28,7 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
   }
 
   return (
-    <>
+    <div className="h-dvh flex flex-col overflow-hidden">
       <Header />
       <main className="flex-1 flex flex-col mx-auto max-w-[1280px] w-full px-12 py-8 min-h-0">
         <div className="mb-4">
@@ -64,6 +64,6 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
           <GardenEditor garden={garden} />
         </div>
       </main>
-    </>
+    </div>
   );
 }
