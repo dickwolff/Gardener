@@ -124,8 +124,11 @@ export function GardenEditor({ garden }: GardenEditorProps) {
 
   const [boundaryPoints, setBoundaryPoints] = useState<Point[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
+  const initialFitDone = useRef(false);
 
   useEffect(() => {
+    if (initialFitDone.current) return;
+    initialFitDone.current = true;
     zoomRef.current = zoom;
   }, [zoom]);
 
@@ -175,7 +178,8 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setZoom(newZoom);
     setViewOffset({ x: centerX - vw / 2, y: centerY - vh / 2 });
-  }, [boundaryPoints, zones, plants, garden.width, garden.height]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [dragState, setDragState] = useState<{
     vertexIndex: number;
