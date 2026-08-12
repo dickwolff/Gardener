@@ -106,9 +106,9 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
                 <CardContent>
                   <div className="flex flex-wrap gap-2 items-center">
                     <SunlightEditor plantId={plant.id} plantName={plant.name} currentSunlight={plant.sunlight}>
-                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1 rounded-xl">
+                      <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1 rounded-xl border-2 border-input">
                         {plant.sunlight === "full_sun" ? <Sun className="w-4 h-4" /> : plant.sunlight === "partial_shade" ? <CloudSun className="w-4 h-4" /> : plant.sunlight === "full_shade" ? <Cloud className="w-4 h-4" /> : <CloudAlert className="w-4 h-4 text-muted-foreground" />}
-                        <span className="text-muted-foreground">{plant.sunlight === "full_sun" ? "Volle zon" : plant.sunlight === "partial_shade" ? "Half schaduw" : plant.sunlight === "full_shade" ? "Schaduw" : "Onbekend"}</span>
+                        <span className="text-muted-foreground">{plant.sunlight === "full_sun" ? "Volle zon" : plant.sunlight === "partial_shade" ? "Half schaduw" : plant.sunlight === "full_shade" ? "Schaduw" : "Zonplaats onbekend"}</span>
                       </Button>
                     </SunlightEditor>
                     {plant.watering && (
