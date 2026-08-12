@@ -1,9 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function refreshBloomData(formData: FormData) {
+  const prisma = getPrisma();
   const gardenId = formData.get("gardenId") as string;
 
   const plants = await prisma.plant.findMany({

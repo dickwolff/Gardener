@@ -1,6 +1,7 @@
-import { prisma } from "../src/lib/prisma";
+import { getPrisma } from "../src/lib/prisma";
 
 async function main() {
+  const prisma = getPrisma();
   const existingUser = await prisma.user.findUnique({
     where: { email: "tuinier@plot.app" },
   });
@@ -24,5 +25,6 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    const prisma = getPrisma();
     await prisma.$disconnect();
   });

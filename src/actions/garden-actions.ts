@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { getDefaultUser } from "@/lib/data";
 
 export async function createGarden(formData: FormData) {
+  const prisma = getPrisma();
   const user = await getDefaultUser();
   const name = formData.get("name") as string;
   const width = parseFloat(formData.get("width") as string);
@@ -23,6 +24,7 @@ export async function createGarden(formData: FormData) {
 }
 
 export async function updateGarden(id: string, data: { name?: string }) {
+  const prisma = getPrisma();
   const garden = await prisma.garden.update({
     where: { id },
     data,
@@ -32,6 +34,7 @@ export async function updateGarden(id: string, data: { name?: string }) {
 }
 
 export async function deleteGarden(id: string) {
+  const prisma = getPrisma();
   await prisma.garden.delete({ where: { id } });
   revalidatePath("/");
   return { success: true };
@@ -41,6 +44,7 @@ export async function createZone(
   gardenId: string,
   data: { type: string; name?: string; points: { x: number; y: number }[]; color?: string }
 ) {
+  const prisma = getPrisma();
   const garden = await prisma.garden.findUnique({ where: { id: gardenId }, include: { zones: true } });
   if (!garden) return { error: "Tuin niet gevonden." };
 
@@ -63,6 +67,7 @@ export async function updateZone(
   id: string,
   data: { points?: { x: number; y: number }[]; name?: string; color?: string }
 ) {
+  const prisma = getPrisma();
   const updateData: Record<string, unknown> = {};
   if (data.points) updateData.points = JSON.stringify(data.points);
   if (data.name) updateData.name = data.name;
@@ -74,6 +79,7 @@ export async function updateZone(
 }
 
 export async function deleteZone(id: string) {
+  const prisma = getPrisma();
   const zone = await prisma.zone.findUnique({ where: { id } });
   if (!zone) return { error: "Zone niet gevonden." };
 

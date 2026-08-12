@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function getDefaultUser() {
+  const prisma = getPrisma();
   const user = await prisma.user.findUnique({
     where: { email: "tuinier@plot.app" },
   });
@@ -9,6 +10,7 @@ export async function getDefaultUser() {
 }
 
 export async function getGardens() {
+  const prisma = getPrisma();
   const user = await getDefaultUser();
   return prisma.garden.findMany({
     where: { userId: user.id },
@@ -18,6 +20,7 @@ export async function getGardens() {
 }
 
 export async function getGarden(id: string) {
+  const prisma = getPrisma();
   const garden = await prisma.garden.findUnique({
     where: { id },
     include: { zones: { orderBy: { order: "asc" } }, plants: true },

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 
 export async function addPlant(
   gardenId: string,
@@ -20,6 +20,7 @@ export async function addPlant(
     trefleId?: number;
   }
 ) {
+  const prisma = getPrisma();
   const plant = await prisma.plant.create({
     data: {
       gardenId,
@@ -43,6 +44,7 @@ export async function addPlant(
 }
 
 export async function movePlant(id: string, x: number, y: number, zoneId?: string | null) {
+  const prisma = getPrisma();
   const plant = await prisma.plant.update({ where: { id }, data: { x, y, zoneId } });
   revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true, data: plant };
@@ -52,12 +54,14 @@ export async function updatePlant(
   id: string,
   data: { name?: string; notes?: string; zoneId?: string | null }
 ) {
+  const prisma = getPrisma();
   const plant = await prisma.plant.update({ where: { id }, data });
   revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true, data: plant };
 }
 
 export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
+  const prisma = getPrisma();
   const bloomTime = bloomMonths.join(",");
 
   const plant = await prisma.plant.update({
@@ -70,6 +74,7 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
 }
 
 export async function updatePruningTime(plantId: string, months: number[]) {
+  const prisma = getPrisma();
   const pruningTime = months.join(",");
 
   const plant = await prisma.plant.update({
@@ -82,6 +87,7 @@ export async function updatePruningTime(plantId: string, months: number[]) {
 }
 
 export async function updateSunlight(plantId: string, sunlight: string) {
+  const prisma = getPrisma();
   const plant = await prisma.plant.update({
     where: { id: plantId },
     data: { sunlight },
@@ -93,6 +99,7 @@ export async function updateSunlight(plantId: string, sunlight: string) {
 }
 
 export async function removePlant(id: string) {
+  const prisma = getPrisma();
   const plant = await prisma.plant.findUnique({ where: { id } });
   if (!plant) return { error: "Plant niet gevonden." };
 
