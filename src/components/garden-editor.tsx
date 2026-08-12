@@ -87,7 +87,7 @@ const ZONE_COLORS: Record<string, { fill: string; stroke: string; label: string 
 
 const ZONE_TYPES = Object.keys(ZONE_COLORS) as ZoneType[];
 
-const GRID_SIZE = 0.5;
+const GRID_SIZE = 0.25;
 
 type Tool = "boundary" | "zone" | "plant" | "select" | "pan";
 
@@ -361,7 +361,12 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     }
 
     if (tool === "select") {
-      const clickedPlant = findNearbyPlant({ x, y });
+      const target = e.target as SVGElement;
+      const plantIdFromTarget = target.closest("[data-plant-id]")?.getAttribute("data-plant-id");
+      const clickedPlant = plantIdFromTarget
+        ? plants.find((p) => p.id === plantIdFromTarget)
+        : findNearbyPlant({ x, y });
+
       if (clickedPlant) {
         setSelectedPlantId(clickedPlant.id);
         setSelectedZoneId(null);
@@ -776,13 +781,14 @@ export function GardenEditor({ garden }: GardenEditorProps) {
               const x = isDragging ? plantDragState.current.x : p.x;
               const y = isDragging ? plantDragState.current.y : p.y;
               return (
-                <g key={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+                <g key={p.id} data-plant-id={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
                   <circle
                     cx={x}
                     cy={y}
                     r={0.25}
                     fill="transparent"
                     stroke="none"
+                    data-plant-id={p.id}
                   />
                   <circle
                     cx={x}
@@ -791,6 +797,7 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                     fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
                     stroke="#FFFFFF"
                     strokeWidth={0.015}
+                    data-plant-id={p.id}
                   />
                   <text
                     x={x}
