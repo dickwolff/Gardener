@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Mijn tuinen"
@@ -36,7 +37,8 @@ export default async function GardensPage() {
             </p>
           </div>
           <Link href="/gardens/new">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl h-11 px-6">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
+              <Plus className="w-4 h-4" />
               Nieuwe tuin
             </Button>
           </Link>
