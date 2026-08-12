@@ -4,7 +4,7 @@ import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { parseBloomMonths, monthLabel } from "@/lib/bloom";
 import { SunlightEditor } from "@/components/sunlight-editor";
-import { Sun, CloudSun, Cloud, CircleHelp, ChevronLeft } from "lucide-react";
+import { Sun, CloudSun, Cloud, CircleHelp, ChevronLeft, PencilRuler } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -33,27 +33,28 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
     <>
       <Header />
       <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-16">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <Link
-              href={`/gardens/${garden.id}`}
-              className="text-muted-foreground text-sm hover:text-foreground inline-flex items-center gap-1"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Terug naar {garden.name}
-            </Link>
+        <div className="mb-8">
+          <Link
+            href={`/gardens/${garden.id}`}
+            className="text-muted-foreground text-sm hover:text-foreground inline-flex items-center gap-1"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Terug naar {garden.name}
+          </Link>
+          <div className="flex items-center justify-between mt-1">
             <h1
-              className="text-4xl text-[#2E2E2E] mt-1"
+              className="text-4xl text-[#2E2E2E]"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
               Planten in {garden.name}
             </h1>
+            <Link href={`/gardens/${garden.id}/editor`}>
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
+                <PencilRuler className="w-4 h-4" />
+                Naar tuineditor
+              </Button>
+            </Link>
           </div>
-          <Link href={`/gardens/${garden.id}/editor`}>
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
-              Naar tuineditor
-            </Button>
-          </Link>
         </div>
 
         {garden.plants.length === 0 ? (
