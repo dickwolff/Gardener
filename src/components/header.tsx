@@ -20,7 +20,7 @@ export function Header({ variant = "default" }: HeaderProps) {
     >
       <div className="mx-auto max-w-[1280px] px-6 md:px-12 py-6 md:py-8 flex items-center justify-between">
         <Link
-          href="/gardens"
+          href="/"
           className="text-2xl tracking-tight flex items-center gap-2"
           style={{ fontFamily: "var(--font-heading)" }}
         >
