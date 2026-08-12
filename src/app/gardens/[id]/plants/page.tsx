@@ -6,6 +6,7 @@ import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { parseBloomMonths, monthLabel } from "@/lib/bloom";
 import { SunlightEditor } from "@/components/sunlight-editor";
+import { BloomMonthEditor } from "@/components/bloom-month-editor";
 import { Sun, CloudSun, Cloud, CloudAlert, ChevronLeft, PencilRuler } from "lucide-react";
 import {
   Card,
@@ -115,13 +116,18 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
                         {plant.watering}
                       </Badge>
                     )}
-                    {plant.bloomTime && (() => {
+                    {(() => {
                       const months = parseBloomMonths(plant.bloomTime);
-                      if (months.length === 0) return null;
                       return (
-                        <Badge variant="secondary" className="rounded-xl">
-                          {months.map((m) => monthLabel(m)).join(", ")}
-                        </Badge>
+                        <BloomMonthEditor
+                          plantId={plant.id}
+                          plantName={plant.name}
+                          initialMonths={months}
+                        >
+                          <Button variant="secondary" size="sm" className="rounded-xl text-xs h-7 px-2">
+                            {months.length > 0 ? months.map((m) => monthLabel(m)).join(", ") : "Bloei onbekend"}
+                          </Button>
+                        </BloomMonthEditor>
                       );
                     })()}
                   </div>
