@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { updatePruningTime } from "@/actions/plant-actions";
 import { monthLabel } from "@/lib/bloom";
@@ -16,7 +17,7 @@ interface PruningMonthEditorProps {
   plantId: string;
   plantName: string;
   initialMonths?: number[];
-  children: ReactNode;
+  children: ReactElement;
 }
 
 export function PruningMonthEditor({ plantId, plantName, initialMonths = [], children }: PruningMonthEditorProps) {
@@ -50,9 +51,7 @@ export function PruningMonthEditor({ plantId, plantName, initialMonths = [], chi
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex">
-        {children}
-      </button>
+      <DialogTrigger render={children} />
       <DialogContent className="rounded-2xl border-0 sm:max-w-xs">
         <DialogHeader>
           <DialogTitle

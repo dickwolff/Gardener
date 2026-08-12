@@ -5,12 +5,12 @@ export function Header() {
   return (
     <header className="bg-secondary text-secondary-foreground sticky top-0 z-50">
       <div className="mx-auto max-w-[1280px] px-12 py-8 flex items-center justify-between">
-        <Link href="/" className="text-2xl tracking-tight flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
+        <Link href="/gardens" className="text-2xl tracking-tight flex items-center gap-2" style={{ fontFamily: "var(--font-heading)" }}>
           <SquareDot className="w-6 h-6 text-primary" strokeWidth={1.5} />
           Plot
         </Link>
         <nav className="flex gap-6 text-sm items-center" style={{ fontFamily: "var(--font-sans)" }}>
-          <Link href="/" className="hover:text-primary transition-colors flex items-center gap-1.5">
+          <Link href="/gardens" className="hover:text-primary transition-colors flex items-center gap-1.5">
             <LayoutGrid className="w-4 h-4" />
             Mijn tuinen
           </Link>

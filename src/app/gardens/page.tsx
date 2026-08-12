@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export default async function HomePage() {
+export default async function GardensPage() {
   const gardens = await getGardens();
 
   return (
