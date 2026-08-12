@@ -37,7 +37,7 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
             className="text-muted-foreground text-sm hover:text-foreground inline-flex items-center gap-1"
           >
             <ChevronLeft className="w-4 h-4" />
-            Terug naar tuin-overzicht
+            Terug naar {garden.name}
           </Link>
           <div className="flex items-center justify-between mt-1">
             <div>
@@ -45,7 +45,7 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
                 className="text-3xl text-[#2E2E2E]"
                 style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
               >
-                {garden.name}
+                Bewerk {garden.name}
               </h1>
               <p className="text-muted-foreground text-sm">
                 {garden.width}m x {garden.height}m
