@@ -28,7 +28,7 @@ export default function NewGardenPage() {
       setError(result.error);
       setLoading(false);
     } else if (result.success && result.data) {
-      router.push(`/gardens/${result.data.id}`);
+      router.push(`/gardens/${result.data.id}/editor`);
     }
   }
 

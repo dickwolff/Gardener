@@ -75,7 +75,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
                 Herlaad bloeidata
               </Button>
             </form>
-            <Link href={`/gardens/${garden.id}`}>
+            <Link href={`/gardens/${garden.id}/editor`}>
               <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
                 Naar tuineditor
               </Button>
@@ -89,7 +89,7 @@ export default async function BloomPage({ params }: BloomPageProps) {
               <p className="text-muted-foreground mb-4">
                 Nog geen planten in deze tuin.
               </p>
-              <Link href={`/gardens/${garden.id}`}>
+              <Link href={`/gardens/${garden.id}/editor`}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
                   Planten plaatsen
                 </Button>

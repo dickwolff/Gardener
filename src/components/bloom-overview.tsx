@@ -48,7 +48,7 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
       <Card className="rounded-2xl border-0">
         <CardContent className="flex flex-col items-center justify-center py-16 text-center">
           <p className="text-muted-foreground mb-4">Nog geen planten in deze tuin.</p>
-          <Link href={`/gardens/${gardenId}`}>
+          <Link href={`/gardens/${gardenId}/editor`}>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
               Planten plaatsen
             </Button>

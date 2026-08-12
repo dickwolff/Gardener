@@ -1,22 +1,21 @@
-import { getGarden } from "@/lib/data";
-import { getDefaultUser } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { GardenEditor } from "@/components/garden-editor";
+import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { BloomOverview } from "@/components/bloom-overview";
+import { PruningOverview } from "@/components/pruning-overview";
 
-interface GardenPageProps {
+interface OverviewPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function GardenPage({ params }: GardenPageProps) {
+export default async function OverviewPage({ params }: OverviewPageProps) {
   const { id } = await params;
   let garden;
 
   try {
     garden = await getGarden(id);
-    await getDefaultUser();
   } catch {
     notFound();
   }
@@ -24,39 +23,45 @@ export default async function GardenPage({ params }: GardenPageProps) {
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-8">
-        <div className="flex items-center justify-between mb-4">
+      <main className="flex-1 mx-auto max-w-[1280px] w-full px-12 py-16">
+        <div className="flex items-center justify-between mb-8">
           <div>
+            <Link
+              href="/gardens"
+              className="text-muted-foreground text-sm hover:text-foreground"
+            >
+              Terug naar mijn tuinen
+            </Link>
             <h1
-              className="text-3xl text-[#2E2E2E]"
+              className="text-4xl text-[#2E2E2E] mt-1"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
-              {garden.name}
+              Tuin-overzicht
             </h1>
-            <p className="text-muted-foreground text-sm">
-              {garden.width}m x {garden.height}m
-            </p>
           </div>
           <div className="flex gap-2">
-            <Link href={`/gardens/${garden.id}/overzicht`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
-                Tuin-overzicht
-              </Button>
-            </Link>
             <Link href={`/gardens/${garden.id}/plants`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+              <Button variant="outline" className="rounded-2xl border-2 border-input">
                 Plantenlijst
               </Button>
             </Link>
             <Link href={`/gardens/${garden.id}/bloom`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+              <Button variant="outline" className="rounded-2xl border-2 border-input">
                 Bloei-overzicht
+              </Button>
+            </Link>
+            <Link href={`/gardens/${garden.id}/editor`}>
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
+                Tuineditor
               </Button>
             </Link>
           </div>
         </div>
 
-        <GardenEditor garden={garden} />
+        <div className="space-y-8">
+          <BloomOverview gardenId={garden.id} plants={garden.plants} />
+          <PruningOverview gardenId={garden.id} plants={garden.plants} />
+        </div>
       </main>
     </>
   );

@@ -48,7 +48,7 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
               Planten in {garden.name}
             </h1>
           </div>
-          <Link href={`/gardens/${garden.id}`}>
+          <Link href={`/gardens/${garden.id}/editor`}>
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
               Naar tuineditor
             </Button>
@@ -61,7 +61,7 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
               <p className="text-muted-foreground mb-4">
                 Nog geen planten geplaatst in deze tuin.
               </p>
-              <Link href={`/gardens/${garden.id}`}>
+              <Link href={`/gardens/${garden.id}/editor`}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
                   Planten plaatsen
                 </Button>

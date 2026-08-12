@@ -66,7 +66,7 @@ export async function updateBloomTime(plantId: string, bloomMonths: number[]) {
   });
 
   revalidatePath(`/gardens/${plant.gardenId}/bloom`);
-  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
+  revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true };
 }
 
@@ -78,8 +78,7 @@ export async function updatePruningTime(plantId: string, months: number[]) {
     data: { pruningTime },
   });
 
-  revalidatePath(`/gardens/${plant.gardenId}/bloom`);
-  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
+  revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true };
 }
 
@@ -90,8 +89,8 @@ export async function updateSunlight(plantId: string, sunlight: string) {
   });
 
   revalidatePath(`/gardens/${plant.gardenId}/bloom`);
-  revalidatePath(`/gardens/${plant.gardenId}/overzicht`);
   revalidatePath(`/gardens/${plant.gardenId}/plants`);
+  revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true };
 }
 
