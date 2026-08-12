@@ -181,8 +181,8 @@ export default function HomePage() {
             {[
               {
                 icon: PenTool,
-                title: "Teken",
-                text: "Teken de omtrek van je tuin en verdeel hem in zones.",
+                title: "Plot",
+                text: "Zet je tuin op de kaart. Teken de omtrek en verdeel hem in zones.",
               },
               {
                 icon: Sprout,

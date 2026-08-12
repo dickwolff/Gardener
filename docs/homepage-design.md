@@ -31,7 +31,7 @@ Secundair: **"Bekijk mijn tuinen"** -> `/gardens`
 | **Hero** (teal band, 80px onderradius) | Serif-kop met tagline, korte subtekst, amber CTA "Nieuwe tuin aanmaken" + secundaire link, in-palet illustratie/mockup van een tuin |
 | **Intro** (papier) | Editorial paragraaf: wat Plot is en voor wie |
 | **Features** (papier) | Twee borderloze witte panels: Tuin ontwerper & Plantenbibliotheek, elk met korte tekst + eigen visueel accent |
-| **Hoe het werkt** (papier) | 3 stappen: teken -> plant -> plan (snoeien/bloeien) |
+| **Hoe het werkt** (papier) | 3 stappen: plot -> plant -> plan |
 | **CTA-band** (teal of donker eiland `#1A1A1A`) | Laatste uitnodiging met herhaalde amber CTA |
 | **Footer** | Merknaam, compacte links (Mijn tuinen, Nieuwe tuin), copyright |
 
