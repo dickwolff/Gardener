@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
   description: "Ontwerp je tuin, plaats planten of bomen, en houd bij wat waar groeit",
   icons: {
-    icon: "/logo.svg",
+    icon: "/icon.svg",
   }
 };
 
