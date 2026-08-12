@@ -649,22 +649,39 @@ export function GardenEditor({ garden }: GardenEditorProps) {
           </Button>
         )}
 
-        {selectedZoneId && (
+        <div className="ml-auto flex flex-wrap gap-2 items-center">
+          {selectedZoneId && (
+            <Button
+              size="sm"
+              variant="destructive"
+              className="rounded-xl"
+              onClick={handleDeleteZone}
+            >
+              Zone verwijderen
+            </Button>
+          )}
+
+          {zones.length > 0 && (
+            <>
+              {ZONE_TYPES.map((t) => {
+                const count = zones.filter((z) => z.type === t).length;
+                if (count === 0) return null;
+                return (
+                  <Badge key={t} className="rounded-xl" variant="secondary">
+                    {ZONE_COLORS[t].label}: {count}
+                  </Badge>
+                );
+              })}
+              <Badge className="rounded-xl" variant="secondary">
+                Planten: {plants.length}
+              </Badge>
+            </>
+          )}
+
           <Button
             size="sm"
             variant="destructive"
-            className="rounded-xl ml-auto"
-            onClick={handleDeleteZone}
-          >
-            Zone verwijderen
-          </Button>
-        )}
-
-        <div className="ml-auto">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="rounded-xl text-muted-foreground hover:text-destructive"
+            className="rounded-xl"
             onClick={handleDeleteGarden}
             disabled={isDeleting}
           >
