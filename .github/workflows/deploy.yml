@@ -27,6 +27,15 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
+      - name: Deploy schema to D1
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          npx prisma migrate diff --from-empty --to-schema-datamodel ./prisma/schema.prisma --script --output /tmp/schema.sql
+          npx wrangler d1 execute plot-db --remote --file=/tmp/schema.sql
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Build for Cloudflare
         run: npx opennextjs-cloudflare build
         env:
