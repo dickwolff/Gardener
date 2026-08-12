@@ -125,7 +125,7 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
                           initialMonths={months}
                         >
                           <Button variant="secondary" size="sm" className="rounded-xl text-xs h-7 px-2 gap-1">
-                            {months.length > 0 ? <Flower className="w-4 h-4" /> : <Sprout className="w-4 h-4 text-muted-foreground" />}
+                            {months.length > 0 ? <Flower className="w-4 h-4 text-white" /> : <Sprout className="w-4 h-4 text-muted-foreground" />}
                             {months.length > 0 ? months.map((m) => monthLabel(m)).join(", ") : "Bloei onbekend"}
                           </Button>
                         </BloomMonthEditor>
