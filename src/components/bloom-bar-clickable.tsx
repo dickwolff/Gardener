@@ -8,7 +8,10 @@ export function BloomBarClickable({ months }: BloomBarClickableProps) {
   const MONTH_LABELS = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
 
   return (
-    <div className="flex-1 flex gap-1 cursor-pointer">
+    <button
+      type="button"
+      className="flex-1 flex gap-1 cursor-pointer border-0 p-0 bg-transparent"
+    >
       {Array.from({ length: 12 }).map((_, i) => {
         const m = i + 1;
         return (
@@ -25,6 +28,6 @@ export function BloomBarClickable({ months }: BloomBarClickableProps) {
           </div>
         );
       })}
-    </div>
+    </button>
   );
 }
