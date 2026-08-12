@@ -120,4 +120,12 @@
     letter-spacing: -0.025em;
     color: #2E2E2E;
   }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
 }
