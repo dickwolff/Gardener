@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import VersionUpdateChecker from "@/components/version-update-checker";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,6 +35,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col antialiased">
         <TooltipProvider>{children}</TooltipProvider>
+        <VersionUpdateChecker />
       </body>
     </html>
   );
