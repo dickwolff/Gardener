@@ -22,7 +22,7 @@ export default async function GardensPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-7xl w-full px-12 py-16">
+      <main className="flex-1 mx-auto max-w-7xl w-full p-12">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1
