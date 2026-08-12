@@ -4,7 +4,7 @@ import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { parseBloomMonths, monthLabel } from "@/lib/bloom";
 import { SunlightEditor } from "@/components/sunlight-editor";
-import { Sun, CloudSun, Cloud, CircleHelp } from "lucide-react";
+import { Sun, CloudSun, Cloud, CircleHelp, ChevronLeft } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -37,8 +37,9 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
           <div>
             <Link
               href={`/gardens/${garden.id}`}
-              className="text-muted-foreground text-sm hover:text-foreground"
+              className="text-muted-foreground text-sm hover:text-foreground inline-flex items-center gap-1"
             >
+              <ChevronLeft className="w-4 h-4" />
               Terug naar {garden.name}
             </Link>
             <h1
