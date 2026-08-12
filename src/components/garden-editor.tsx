@@ -195,6 +195,10 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     plantDragRef.current = plantDragState;
   }, [plantDragState]);
 
+  useEffect(() => {
+    plantHandledRef.current = false;
+  }, [tool]);
+
   const [plantSearchOpen, setPlantSearchOpen] = useState(false);
   const [plantSearchQuery, setPlantSearchQuery] = useState("");
   const [plantSearchResults, setPlantSearchResults] = useState<PlantSearchResult[]>([]);
@@ -212,9 +216,22 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const vh = garden.height / z;
     const vx = offsetRef.current.x;
     const vy = offsetRef.current.y;
-    const x = vx + (e.clientX - rect.left) * (vw / rect.width);
-    const y = vy + (e.clientY - rect.top) * (vh / rect.height);
-    return { x, y };
+
+    // SVG uses preserveAspectRatio="xMidYMid meet", so the viewBox is centered
+    // and may have letterboxing. Calculate the actual content scale/offsets.
+    const scale = Math.min(rect.width / vw, rect.height / vh);
+    const contentW = vw * scale;
+    const contentH = vh * scale;
+    const offsetX = (rect.width - contentW) / 2;
+    const offsetY = (rect.height - contentH) / 2;
+
+    const contentX = e.clientX - rect.left - offsetX;
+    const contentY = e.clientY - rect.top - offsetY;
+
+    return {
+      x: vx + contentX / scale,
+      y: vy + contentY / scale,
+    };
   }
 
   function findNearbyVertex(svgPos: Point): { zoneId: string; vertexIndex: number; points: Point[] } | null {
@@ -388,9 +405,10 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         const z = zoomRef.current;
         const vw = garden.width / z;
         const vh = garden.height / z;
+        const scale = Math.min(rect.width / vw, rect.height / vh);
         setViewOffset((prev) => ({
-          x: prev.x - e.movementX * (vw / rect.width),
-          y: prev.y - e.movementY * (vh / rect.height),
+          x: prev.x - e.movementX / scale,
+          y: prev.y - e.movementY / scale,
         }));
       }
     }
