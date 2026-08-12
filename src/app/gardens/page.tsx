@@ -75,9 +75,6 @@ export default async function GardensPage() {
                     >
                       {garden.name}
                     </CardTitle>
-                    <CardDescription>
-                      {garden.width}m x {garden.height}m
-                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex gap-2 flex-wrap">
