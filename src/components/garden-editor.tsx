@@ -828,23 +828,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         </CardContent>
       </Card>
 
-      {zones.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {ZONE_TYPES.map((t) => {
-            const count = zones.filter((z) => z.type === t).length;
-            if (count === 0) return null;
-            return (
-              <Badge key={t} className="rounded-xl" variant="secondary">
-                {ZONE_COLORS[t].label}: {count}
-              </Badge>
-            );
-          })}
-          <Badge className="rounded-xl" variant="secondary">
-            Planten: {plants.length}
-          </Badge>
-        </div>
-      )}
-
       <PlantSearchDrawer
         open={plantSearchOpen}
         onClose={() => {
