@@ -65,7 +65,7 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
       </CardHeader>
       <CardContent className="space-y-8">
         <div>
-          <p className="text-sm text-muted-foreground mb-4">Snoeidichtheid per maand</p>
+          <p className="text-sm text-muted-foreground mb-4">Snoei per maand</p>
           <div className="flex gap-2 h-56 mb-3">
             {density.map((count, i) => (
               <div key={i} className="flex-1 flex flex-col justify-end items-center min-w-0">
