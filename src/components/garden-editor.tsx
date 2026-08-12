@@ -661,23 +661,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
             </Button>
           )}
 
-          {zones.length > 0 && (
-            <>
-              {ZONE_TYPES.map((t) => {
-                const count = zones.filter((z) => z.type === t).length;
-                if (count === 0) return null;
-                return (
-                  <Badge key={t} className="rounded-xl" variant="secondary">
-                    {ZONE_COLORS[t].label}: {count}
-                  </Badge>
-                );
-              })}
-              <Badge className="rounded-xl" variant="secondary">
-                Planten: {plants.length}
-              </Badge>
-            </>
-          )}
-
           <Button
             size="sm"
             variant="destructive"
@@ -690,160 +673,179 @@ export function GardenEditor({ garden }: GardenEditorProps) {
         </div>
       </div>
 
-      <Card className="rounded-2xl border-0 overflow-hidden py-0 flex-1 min-h-0">
-        <CardContent className="p-0 h-full">
-          <svg
-            ref={svgRef}
-            viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
-            className="w-full h-full cursor-crosshair select-none"
-            preserveAspectRatio="xMidYMid meet"
-            onMouseDown={handleSvgMouseDown}
-            onClick={handleSvgClick}
-            onMouseMove={handleSvgMouseMove}
-            onMouseUp={handleSvgMouseUp}
-            onWheel={handleWheel}
-            style={{ background: "#F5F5F5" }}
-          >
-            {boundaryPoints.length >= 3 && (
-              <polygon
-                points={boundaryPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-                fill="#FFFFFF"
-                stroke="#2E2E2E"
-                strokeWidth={0.04}
-              />
-            )}
+      <div className="flex-1 min-h-0 flex gap-4">
+        <Card className="rounded-2xl border-0 overflow-hidden py-0 flex-1 min-h-0">
+          <CardContent className="p-0 h-full">
+            <svg
+              ref={svgRef}
+              viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
+              className="w-full h-full cursor-crosshair select-none"
+              preserveAspectRatio="xMidYMid meet"
+              onMouseDown={handleSvgMouseDown}
+              onClick={handleSvgClick}
+              onMouseMove={handleSvgMouseMove}
+              onMouseUp={handleSvgMouseUp}
+              onWheel={handleWheel}
+              style={{ background: "#F5F5F5" }}
+            >
+              {boundaryPoints.length >= 3 && (
+                <polygon
+                  points={boundaryPoints.map((p) => `${p.x},${p.y}`).join(" ")}
+                  fill="#FFFFFF"
+                  stroke="#2E2E2E"
+                  strokeWidth={0.04}
+                />
+              )}
 
-            {renderGrid(GRID_SIZE, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight)}
+              {renderGrid(GRID_SIZE, viewBoxX, viewBoxY, viewBoxWidth, viewBoxHeight)}
 
-            {zones.map((z) => {
-              const pts = JSON.parse(z.points) as Point[];
-              const colors = ZONE_COLORS[z.type] || ZONE_COLORS.custom;
-              return (
-                <g key={z.id}>
-                  {selectedZoneId === z.id && (
-                    <>
-                      <polygon
-                        points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                        fill="none"
-                        stroke="#ECBA82"
-                        strokeWidth={0.015}
-                        strokeDasharray="0.15 0.1"
-                      />
-                      {pts.map((p, i) => (
-                        <circle
-                          key={`v-${i}`}
-                          cx={p.x}
-                          cy={p.y}
-                          r={0.12}
-                          fill="#ECBA82"
-                          stroke="#FFFFFF"
+              {zones.map((z) => {
+                const pts = JSON.parse(z.points) as Point[];
+                const colors = ZONE_COLORS[z.type] || ZONE_COLORS.custom;
+                return (
+                  <g key={z.id}>
+                    {selectedZoneId === z.id && (
+                      <>
+                        <polygon
+                          points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                          fill="none"
+                          stroke="#ECBA82"
                           strokeWidth={0.015}
-                          style={{ cursor: "pointer" }}
+                          strokeDasharray="0.15 0.1"
                         />
-                      ))}
-                    </>
-                  )}
-                  <polygon
-                    points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
-                    fill={colors.fill}
-                    stroke={colors.stroke}
-                    strokeWidth={0.005}
-                    opacity={0.7}
-                  />
-                  {renderZonePattern(z.type, pts)}
-                </g>
-              );
-            })}
+                        {pts.map((p, i) => (
+                          <circle
+                            key={`v-${i}`}
+                            cx={p.x}
+                            cy={p.y}
+                            r={0.12}
+                            fill="#ECBA82"
+                            stroke="#FFFFFF"
+                            strokeWidth={0.015}
+                            style={{ cursor: "pointer" }}
+                          />
+                        ))}
+                      </>
+                    )}
+                    <polygon
+                      points={pts.map((p) => `${p.x},${p.y}`).join(" ")}
+                      fill={colors.fill}
+                      stroke={colors.stroke}
+                      strokeWidth={0.005}
+                      opacity={0.7}
+                    />
+                    {renderZonePattern(z.type, pts)}
+                  </g>
+                );
+              })}
 
-            {plants.map((p) => {
-              const isDragging = plantDragState?.plantId === p.id && plantDragState.dragging;
-              const x = isDragging ? plantDragState.current.x : p.x;
-              const y = isDragging ? plantDragState.current.y : p.y;
-              return (
-                <g key={p.id} data-plant-id={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={0.25}
-                    fill="transparent"
-                    stroke="none"
-                    data-plant-id={p.id}
-                  />
-                  <circle
-                    cx={x}
-                    cy={y}
-                    r={0.12}
-                    fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
-                    stroke="#FFFFFF"
-                    strokeWidth={0.015}
-                    data-plant-id={p.id}
+              {plants.map((p) => {
+                const isDragging = plantDragState?.plantId === p.id && plantDragState.dragging;
+                const x = isDragging ? plantDragState.current.x : p.x;
+                const y = isDragging ? plantDragState.current.y : p.y;
+                return (
+                  <g key={p.id} data-plant-id={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={0.25}
+                      fill="transparent"
+                      stroke="none"
+                      data-plant-id={p.id}
+                    />
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={0.12}
+                      fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
+                      stroke="#FFFFFF"
+                      strokeWidth={0.015}
+                      data-plant-id={p.id}
+                    />
+                    <text
+                      x={x}
+                      y={y - 0.2}
+                      textAnchor="middle"
+                      fontSize={0.2}
+                      fill="#2E2E2E"
+                      style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+                    >
+                      {p.name}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {drawingPoints.length > 0 && (
+                <polyline
+                  points={drawingPoints.map((p) => `${p.x},${p.y}`).join(" ")}
+                  fill="none"
+                  stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                  strokeWidth={tool === "boundary" ? 0.04 : 0.03}
+                  strokeDasharray={tool === "boundary" ? "none" : "0.15 0.1"}
+                />
+              )}
+
+              {drawingPoints.length > 0 && mousePos && (
+                <>
+                  <line
+                    x1={drawingPoints[drawingPoints.length - 1].x}
+                    y1={drawingPoints[drawingPoints.length - 1].y}
+                    x2={mousePos.x}
+                    y2={mousePos.y}
+                    stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                    strokeWidth={0.005}
+                    strokeDasharray="0.1 0.1"
+                    opacity={0.5}
                   />
                   <text
-                    x={x}
-                    y={y - 0.2}
+                    x={(drawingPoints[drawingPoints.length - 1].x + mousePos.x) / 2}
+                    y={(drawingPoints[drawingPoints.length - 1].y + mousePos.y) / 2 - 0.12}
                     textAnchor="middle"
                     fontSize={0.2}
-                    fill="#2E2E2E"
+                    fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
                     style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
                   >
-                    {p.name}
+                    {Math.sqrt(
+                      (mousePos.x - drawingPoints[drawingPoints.length - 1].x) ** 2 +
+                      (mousePos.y - drawingPoints[drawingPoints.length - 1].y) ** 2
+                    ).toFixed(2)}m
                   </text>
-                </g>
+                </>
+              )}
+
+              {drawingPoints.map((p, i) => (
+                <circle
+                  key={i}
+                  cx={p.x}
+                  cy={p.y}
+                  r={0.08}
+                  fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
+                />
+              ))}
+
+              {renderBoundaryLabels(drawingPoints)}
+            </svg>
+          </CardContent>
+        </Card>
+
+        {zones.length > 0 && (
+          <div className="flex flex-col gap-2">
+            {ZONE_TYPES.map((t) => {
+              const count = zones.filter((z) => z.type === t).length;
+              if (count === 0) return null;
+              return (
+                <Badge key={t} className="rounded-xl whitespace-nowrap" variant="secondary">
+                  {ZONE_COLORS[t].label}: {count}
+                </Badge>
               );
             })}
-
-            {drawingPoints.length > 0 && (
-              <polyline
-                points={drawingPoints.map((p) => `${p.x},${p.y}`).join(" ")}
-                fill="none"
-                stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-                strokeWidth={tool === "boundary" ? 0.04 : 0.03}
-                strokeDasharray={tool === "boundary" ? "none" : "0.15 0.1"}
-              />
-            )}
-
-            {drawingPoints.length > 0 && mousePos && (
-              <>
-                <line
-                  x1={drawingPoints[drawingPoints.length - 1].x}
-                  y1={drawingPoints[drawingPoints.length - 1].y}
-                  x2={mousePos.x}
-                  y2={mousePos.y}
-                  stroke={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-                  strokeWidth={0.005}
-                  strokeDasharray="0.1 0.1"
-                  opacity={0.5}
-                />
-                <text
-                  x={(drawingPoints[drawingPoints.length - 1].x + mousePos.x) / 2}
-                  y={(drawingPoints[drawingPoints.length - 1].y + mousePos.y) / 2 - 0.12}
-                  textAnchor="middle"
-                  fontSize={0.2}
-                  fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-                  style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
-                >
-                  {Math.sqrt(
-                    (mousePos.x - drawingPoints[drawingPoints.length - 1].x) ** 2 +
-                    (mousePos.y - drawingPoints[drawingPoints.length - 1].y) ** 2
-                  ).toFixed(2)}m
-                </text>
-              </>
-            )}
-
-            {drawingPoints.map((p, i) => (
-              <circle
-                key={i}
-                cx={p.x}
-                cy={p.y}
-                r={0.08}
-                fill={tool === "boundary" ? "#2E2E2E" : "#ECBA82"}
-              />
-            ))}
-
-            {renderBoundaryLabels(drawingPoints)}
-          </svg>
-        </CardContent>
-      </Card>
+            <Badge className="rounded-xl whitespace-nowrap" variant="secondary">
+              Planten: {plants.length}
+            </Badge>
+          </div>
+        )}
+      </div>
 
       <PlantSearchDrawer
         open={plantSearchOpen}
