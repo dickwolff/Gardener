@@ -52,7 +52,7 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
               </p>
             </div>
             <Link href={`/gardens/${garden.id}/plants`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input gap-2">
+              <Button variant="outline" className="rounded-2xl border-2 border-input gap-2">
                 <Sprout className="w-4 h-4" />
                 Plantenlijst
               </Button>
