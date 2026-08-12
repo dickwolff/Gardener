@@ -361,6 +361,14 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     }
 
     if (tool === "select") {
+      const clickedPlant = findNearbyPlant({ x, y });
+      if (clickedPlant) {
+        setSelectedPlantId(clickedPlant.id);
+        setSelectedZoneId(null);
+        setPlantDetailOpen(true);
+        return;
+      }
+
       const clickedZone = zones.find((z) => {
         const pts = JSON.parse(z.points) as Point[];
         return pointInPolygon({ x, y }, pts);
@@ -769,6 +777,13 @@ export function GardenEditor({ garden }: GardenEditorProps) {
               const y = isDragging ? plantDragState.current.y : p.y;
               return (
                 <g key={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={0.25}
+                    fill="transparent"
+                    stroke="none"
+                  />
                   <circle
                     cx={x}
                     cy={y}
