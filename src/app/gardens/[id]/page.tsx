@@ -12,8 +12,14 @@ interface OverviewPageProps {
   readonly params: Promise<{ id: string }>;
 }
 
-export const metadata: Metadata = {
-  title: "Tuin-overzicht"
+export async function generateMetadata({ params }: OverviewPageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const garden = await getGarden(id);
+    return { title: `Overzicht ${garden.name}` };
+  } catch {
+    return { title: "Overzicht" };
+  }
 }
 
 export default async function OverviewPage({ params }: OverviewPageProps) {
@@ -43,7 +49,7 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
                className="text-3xl text-[#2E2E2E]"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
             >
-              Tuin-overzicht ({garden.name})
+              Overzicht {garden.name}
             </h1>
             <div className="flex gap-2">
               <Link href={`/gardens/${garden.id}/plants`}>
