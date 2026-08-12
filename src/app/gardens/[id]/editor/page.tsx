@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GardenEditor } from "@/components/garden-editor";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, Sprout } from "lucide-react";
 
 interface GardenEditorPageProps {
   params: Promise<{ id: string }>;
@@ -25,26 +26,29 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
     <>
       <Header />
       <main className="flex-1 flex flex-col mx-auto max-w-[1280px] w-full px-12 py-8 min-h-0">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1
-              className="text-3xl text-[#2E2E2E]"
-              style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
-            >
-              {garden.name}
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              {garden.width}m x {garden.height}m
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Link href={`/gardens/${garden.id}`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
-                Tuin-overzicht
-              </Button>
-            </Link>
+        <div className="mb-4">
+          <Link
+            href={`/gardens/${garden.id}`}
+            className="text-muted-foreground text-sm hover:text-foreground inline-flex items-center gap-1"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Terug naar tuin-overzicht
+          </Link>
+          <div className="flex items-center justify-between mt-1">
+            <div>
+              <h1
+                className="text-3xl text-[#2E2E2E]"
+                style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
+              >
+                {garden.name}
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                {garden.width}m x {garden.height}m
+              </p>
+            </div>
             <Link href={`/gardens/${garden.id}/plants`}>
-              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input">
+              <Button variant="outline" size="sm" className="rounded-xl border-2 border-input gap-2">
+                <Sprout className="w-4 h-4" />
                 Plantenlijst
               </Button>
             </Link>
