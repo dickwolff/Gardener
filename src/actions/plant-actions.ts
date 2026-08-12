@@ -42,8 +42,8 @@ export async function addPlant(
   return { success: true, data: plant };
 }
 
-export async function movePlant(id: string, x: number, y: number) {
-  const plant = await prisma.plant.update({ where: { id }, data: { x, y } });
+export async function movePlant(id: string, x: number, y: number, zoneId?: string | null) {
+  const plant = await prisma.plant.update({ where: { id }, data: { x, y, zoneId } });
   revalidatePath(`/gardens/${plant.gardenId}`);
   return { success: true, data: plant };
 }

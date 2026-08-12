@@ -27,6 +27,7 @@ import {
 } from "@/actions/garden-actions";
 import {
   addPlant,
+  movePlant,
   removePlant,
   searchPlants,
   getPlantDetail,
@@ -182,6 +183,18 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     points: Point[];
   } | null>(null);
 
+  const [plantDragState, setPlantDragState] = useState<{
+    plantId: string;
+    start: Point;
+    current: Point;
+  } | null>(null);
+  const plantDragRef = useRef(plantDragState);
+  const plantHandledRef = useRef(false);
+
+  useEffect(() => {
+    plantDragRef.current = plantDragState;
+  }, [plantDragState]);
+
   const [plantSearchOpen, setPlantSearchOpen] = useState(false);
   const [plantSearchQuery, setPlantSearchQuery] = useState("");
   const [plantSearchResults, setPlantSearchResults] = useState<PlantSearchResult[]>([]);
@@ -219,6 +232,15 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     return null;
   }
 
+  function findNearbyPlant(svgPos: Point) {
+    const threshold = 0.2 / zoom;
+    return plants.find((p) => {
+      const dx = p.x - svgPos.x;
+      const dy = p.y - svgPos.y;
+      return Math.sqrt(dx * dx + dy * dy) < threshold;
+    });
+  }
+
   function handleSvgMouseDown(e: React.MouseEvent<SVGSVGElement>) {
     const svgPos = getSvgCoords(e);
     if (tool === "select") {
@@ -226,6 +248,17 @@ export function GardenEditor({ garden }: GardenEditorProps) {
       if (nearbyVertex) {
         setDragState(nearbyVertex);
         setSelectedZoneId(nearbyVertex.zoneId);
+        return;
+      }
+
+      const nearbyPlant = findNearbyPlant(svgPos);
+      if (nearbyPlant) {
+        plantDragRef.current = { plantId: nearbyPlant.id, start: svgPos, current: svgPos };
+        plantHandledRef.current = false;
+        setSelectedPlantId(nearbyPlant.id);
+        setSelectedZoneId(null);
+        setPlantDragState(plantDragRef.current);
+        return;
       }
     }
   }
@@ -241,13 +274,44 @@ export function GardenEditor({ garden }: GardenEditorProps) {
           )
         );
         setDragState(null);
+        return;
+      }
+
+      if (plantDragRef.current) {
+        const { plantId, start, current } = plantDragRef.current;
+        const dx = current.x - start.x;
+        const dy = current.y - start.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance > 0.1) {
+          const zone = zones.find((z) => {
+            const pts = JSON.parse(z.points) as Point[];
+            return pointInPolygon(current, pts);
+          });
+          await movePlant(plantId, current.x, current.y, zone?.id ?? null);
+          setPlants((prev) =>
+            prev.map((p) =>
+              p.id === plantId ? { ...p, x: current.x, y: current.y, zoneId: zone?.id ?? null } : p
+            )
+          );
+        } else {
+          setPlantDetailOpen(true);
+        }
+
+        plantDragRef.current = null;
+        setPlantDragState(null);
+        plantHandledRef.current = true;
       }
     },
-    [dragState]
+    [dragState, zones]
   );
 
   function handleSvgClick(e: React.MouseEvent<SVGSVGElement>) {
     if (dragState) return;
+    if (plantHandledRef.current) {
+      plantHandledRef.current = false;
+      return;
+    }
 
     const svgPos = getSvgCoords(e);
     const x = svgPos.x;
@@ -280,16 +344,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     }
 
     if (tool === "select") {
-      const clickedPlant = plants.find(
-        (p) => Math.abs(p.x - x) < 0.15 && Math.abs(p.y - y) < 0.15
-      );
-      if (clickedPlant) {
-        setSelectedPlantId(clickedPlant.id);
-        setSelectedZoneId(null);
-        setPlantDetailOpen(true);
-        return;
-      }
-
       const clickedZone = zones.find((z) => {
         const pts = JSON.parse(z.points) as Point[];
         return pointInPolygon({ x, y }, pts);
@@ -317,6 +371,13 @@ export function GardenEditor({ garden }: GardenEditorProps) {
           z.id === dragState.zoneId ? { ...z, points: JSON.stringify(newPoints) } : z
         )
       );
+      return;
+    }
+
+    if (plantDragRef.current) {
+      const newPos = snapToGrid(svgPos.x, svgPos.y);
+      plantDragRef.current = { ...plantDragRef.current, current: newPos };
+      setPlantDragState({ ...plantDragRef.current });
       return;
     }
 
@@ -695,28 +756,33 @@ export function GardenEditor({ garden }: GardenEditorProps) {
               );
             })}
 
-            {plants.map((p) => (
-              <g key={p.id}>
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={0.12}
-                  fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
-                  stroke="#FFFFFF"
-                  strokeWidth={0.015}
-                />
-                <text
-                  x={p.x}
-                  y={p.y - 0.2}
-                  textAnchor="middle"
-                  fontSize={0.2}
-                  fill="#2E2E2E"
-                  style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
-                >
-                  {p.name}
-                </text>
-              </g>
-            ))}
+            {plants.map((p) => {
+              const isDragging = plantDragState?.plantId === p.id;
+              const x = isDragging ? plantDragState.current.x : p.x;
+              const y = isDragging ? plantDragState.current.y : p.y;
+              return (
+                <g key={p.id} style={{ cursor: isDragging ? "grabbing" : "grab" }}>
+                  <circle
+                    cx={x}
+                    cy={y}
+                    r={0.12}
+                    fill={selectedPlantId === p.id ? "#024F46" : "#4A7C59"}
+                    stroke="#FFFFFF"
+                    strokeWidth={0.015}
+                  />
+                  <text
+                    x={x}
+                    y={y - 0.2}
+                    textAnchor="middle"
+                    fontSize={0.2}
+                    fill="#2E2E2E"
+                    style={{ fontFamily: "var(--font-sans)", pointerEvents: "none" }}
+                  >
+                    {p.name}
+                  </text>
+                </g>
+              );
+            })}
 
             {drawingPoints.length > 0 && (
               <polyline
