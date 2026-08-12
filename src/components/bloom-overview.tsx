@@ -172,7 +172,10 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
                   plantName={plant.name}
                   currentSunlight={plant.sunlight}
                 >
-                  <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <button
+                    type="button"
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground border-0 p-0 bg-transparent"
+                  >
                     {plant.sunlight === "full_sun" ? (
                       <Sun className="w-3.5 h-3.5" />
                     ) : plant.sunlight === "partial_shade" ? (
@@ -182,7 +185,7 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
                     ) : (
                       <CircleHelp className="w-3.5 h-3.5" />
                     )}
-                  </span>
+                  </button>
                 </SunlightEditor>
               </div>
             ))}

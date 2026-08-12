@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, type ReactNode } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -158,8 +159,6 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const pad = 1;
     const contentW = maxX - minX + pad * 2;
     const contentH = maxY - minY + pad * 2;
-    const svgElement = svgRef.current;
-    if (!svgElement) return;
 
     const viewW = garden.width;
     const viewH = garden.height;
@@ -172,9 +171,10 @@ export function GardenEditor({ garden }: GardenEditorProps) {
     const vw = viewW / newZoom;
     const vh = viewH / newZoom;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setZoom(newZoom);
     setViewOffset({ x: centerX - vw / 2, y: centerY - vh / 2 });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [boundaryPoints, zones, plants, garden.width, garden.height]);
 
   const [dragState, setDragState] = useState<{
     vertexIndex: number;
@@ -818,11 +818,15 @@ export function GardenEditor({ garden }: GardenEditorProps) {
           {selectedPlant && (
             <div className="space-y-4">
               {selectedPlant.imageUrl && (
-                <img
-                  src={selectedPlant.imageUrl}
-                  alt={selectedPlant.name}
-                  className="w-full h-48 object-cover rounded-xl"
-                />
+                <div className="relative w-full h-48">
+                  <Image
+                    src={selectedPlant.imageUrl}
+                    alt={selectedPlant.name}
+                    fill
+                    unoptimized
+                    className="object-cover rounded-xl"
+                  />
+                </div>
               )}
               {selectedPlant.scientificName && (
                 <p className="text-muted-foreground italic">{selectedPlant.scientificName}</p>
@@ -957,9 +961,12 @@ function PlantSearchDrawer({
               >
                 <CardContent className="flex items-center gap-3 p-3">
                   {plant.image_url && (
-                    <img
+                    <Image
                       src={plant.image_url}
                       alt={plant.common_name}
+                      width={48}
+                      height={48}
+                      unoptimized
                       className="w-12 h-12 rounded-lg object-cover"
                     />
                   )}

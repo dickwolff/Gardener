@@ -10,7 +10,6 @@ export async function refreshBloomData(formData: FormData) {
     where: { gardenId, trefleId: { not: null } },
   });
 
-  let updated = 0;
   const trefleToken = process.env.TREFLE_API_TOKEN;
 
   for (const plant of plants) {
@@ -41,7 +40,6 @@ export async function refreshBloomData(formData: FormData) {
         where: { id: plant.id },
         data: { bloomTime: bloom },
       });
-      updated++;
     } catch {
       continue;
     }

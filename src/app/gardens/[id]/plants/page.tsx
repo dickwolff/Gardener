@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { getGarden } from "@/lib/data";
 import { Header } from "@/components/header";
 import { parseBloomMonths, monthLabel } from "@/lib/bloom";
@@ -80,11 +81,13 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
             {garden.plants.map((plant) => (
               <Card key={plant.id} className="rounded-2xl border-0">
                 {plant.imageUrl && (
-                  <div className="w-full h-40 overflow-hidden rounded-t-2xl">
-                    <img
+                  <div className="relative w-full h-40 overflow-hidden rounded-t-2xl">
+                    <Image
                       src={plant.imageUrl}
                       alt={plant.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      unoptimized
+                      className="object-cover"
                     />
                   </div>
                 )}
