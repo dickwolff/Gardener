@@ -5,7 +5,7 @@ import { BloomMonthEditor } from "@/components/bloom-month-editor";
 import { BloomBarClickable } from "@/components/bloom-bar-clickable";
 import { SunlightEditor } from "@/components/sunlight-editor";
 import { refreshBloomData } from "@/actions/bloom-actions";
-import { Sun, CloudSun, Cloud, CircleHelp } from "lucide-react";
+import { Sun, CloudSun, Cloud, CloudAlert } from "lucide-react";
 import {
   safeParseBloom,
   getGapMonths,
@@ -183,7 +183,7 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
                     ) : plant.sunlight === "full_shade" ? (
                       <Cloud className="w-3.5 h-3.5" />
                     ) : (
-                      <CircleHelp className="w-3.5 h-3.5" />
+                      <CloudAlert className="w-3.5 h-3.5" />
                     )}
                   </button>
                 </SunlightEditor>
