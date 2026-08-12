@@ -18,9 +18,10 @@ interface BloomMonthEditorProps {
   plantName: string;
   initialMonths?: number[];
   children: ReactElement;
+  onSave?: (months: number[]) => void;
 }
 
-export function BloomMonthEditor({ plantId, plantName, initialMonths = [], children }: BloomMonthEditorProps) {
+export function BloomMonthEditor({ plantId, plantName, initialMonths = [], children, onSave }: BloomMonthEditorProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<number[]>([]);
@@ -44,6 +45,7 @@ export function BloomMonthEditor({ plantId, plantName, initialMonths = [], child
     if (selected.length === 0) return;
     setSaving(true);
     await updateBloomTime(plantId, selected);
+    onSave?.(selected);
     setSaving(false);
     setOpen(false);
     router.refresh();

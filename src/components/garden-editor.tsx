@@ -38,7 +38,8 @@ import {
 } from "@/actions/perenual-actions";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, RotateCcw } from "lucide-react";
-import { safeParseBloom } from "@/lib/bloom";
+import { safeParseBloom, monthLabel } from "@/lib/bloom";
+import { BloomMonthEditor } from "@/components/bloom-month-editor";
 
 type Point = { x: number; y: number };
 
@@ -951,12 +952,28 @@ export function GardenEditor({ garden }: GardenEditorProps) {
                     <p className="text-sm">{selectedPlant.watering}</p>
                   </div>
                 )}
-                {selectedPlant.bloomTime && (
-                  <div>
+                <BloomMonthEditor
+                  plantId={selectedPlant.id}
+                  plantName={selectedPlant.name}
+                  initialMonths={safeParseBloom(selectedPlant.bloomTime)}
+                  onSave={(months) =>
+                    setPlants((prev) =>
+                      prev.map((p) =>
+                        p.id === selectedPlant.id ? { ...p, bloomTime: months.join(",") } : p
+                      )
+                    )
+                  }
+                >
+                  <button
+                    type="button"
+                    className="text-left w-full"
+                  >
                     <Label className="text-xs text-muted-foreground">Bloeiperiode</Label>
-                    <p className="text-sm">{selectedPlant.bloomTime}</p>
-                  </div>
-                )}
+                    <p className="text-sm">
+                      {safeParseBloom(selectedPlant.bloomTime).map(monthLabel).join(", ") || "Onbekend"}
+                    </p>
+                  </button>
+                </BloomMonthEditor>
               </div>
               {selectedPlant.notes && (
                 <div>
