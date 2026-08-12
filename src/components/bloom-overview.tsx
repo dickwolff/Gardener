@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { BloomMonthEditor } from "@/components/bloom-month-editor";
 import { BloomBarClickable } from "@/components/bloom-bar-clickable";
@@ -144,8 +145,7 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
           </div>
         )}
 
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Planten per bloeiperiode</p>
+        <Collapsible title="Planten per bloeiperiode">
           <div className="space-y-3">
             {bloomingPlants.map((plant) => (
               <div
@@ -190,11 +190,10 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
               </div>
             ))}
           </div>
-        </div>
+        </Collapsible>
 
         {plantsWithoutBloomData.length > 0 && (
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Planten zonder bloeidata</p>
+          <Collapsible title="Planten zonder bloeidata">
             <div className="space-y-2">
               {plantsWithoutBloomData.map((p) => (
                 <div
@@ -215,7 +214,7 @@ export function BloomOverview({ gardenId, plants }: BloomOverviewProps) {
                 </div>
               ))}
             </div>
-          </div>
+          </Collapsible>
         )}
       </CardContent>
     </Card>

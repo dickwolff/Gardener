@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { PruningMonthEditor } from "@/components/pruning-month-editor";
 import { PruningBarClickable } from "@/components/pruning-bar-clickable";
@@ -112,8 +113,7 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
           </div>
         )}
 
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">Planten per snoeiperiode</p>
+        <Collapsible title="Planten per snoeiperiode">
           <div className="space-y-3">
             {pruningPlants.map((plant) => (
               <div
@@ -134,11 +134,10 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
               </div>
             ))}
           </div>
-        </div>
+        </Collapsible>
 
         {plantsWithoutPruningData.length > 0 && (
-          <div>
-            <p className="text-sm text-muted-foreground mb-2">Planten zonder snoeidata</p>
+          <Collapsible title="Planten zonder snoeidata">
             <div className="space-y-2">
               {plantsWithoutPruningData.map((p) => (
                 <div
@@ -159,7 +158,7 @@ export function PruningOverview({ gardenId, plants }: PruningOverviewProps) {
                 </div>
               ))}
             </div>
-          </div>
+          </Collapsible>
         )}
       </CardContent>
     </Card>
