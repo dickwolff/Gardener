@@ -21,8 +21,8 @@ Trouw aan het Organic design systeem: warm, rustig, editorial en onhaast.
 Secundair: **"Bekijk mijn tuinen"** -> `/gardens`
 
 ## 5. Uitgelichte features (alleen deze twee)
-- **Tuin ontwerper**: teken de omtrek, voeg zones toe, sleep planten op een canvas
-- **Plantenbibliotheek**: zoek planten via TREFLE, krijg naam, foto en verzorging
+- **Tuin ontwerper**: teken de omtrek, voeg zones toe, sleep planten en bomen op een canvas
+- **Plantenbibliotheek**: zoek planten en bomen via TREFLE, krijg naam, foto en verzorging
 
 ## 6. Pagina-opbouw
 
