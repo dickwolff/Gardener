@@ -39,7 +39,7 @@ export default async function PlantsPage({ params }: PlantsPageProps) {
   return (
     <>
       <Header />
-      <main className="flex-1 mx-auto max-w-[1280px] w-full p-12">
+      <main className="flex-1 mx-auto max-w-7xl w-full p-12">
         <div className="mb-8">
           <Link
             href={`/gardens/${garden.id}`}

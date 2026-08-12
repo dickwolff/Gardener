@@ -79,7 +79,7 @@ export default function HomePage() {
       <Header />
       <main className="flex-1">
         <section className="bg-secondary text-secondary-foreground rounded-b-[80px]">
-          <div className="mx-auto max-w-[1280px] w-full px-6 md:px-12 py-20 md:py-28 grid lg:grid-cols-2 gap-14 items-center">
+          <div className="mx-auto max-w-7xl w-full px-6 md:px-12 py-20 md:py-28 grid lg:grid-cols-2 gap-14 items-center">
             <div className="space-y-6">
               <p className="text-primary text-sm font-medium">Tuinontwerp & beheer</p>
               <h1
@@ -115,7 +115,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] w-full px-6 md:px-12 py-16 md:py-28">
+        <section className="mx-auto max-w-7xl w-full px-6 md:px-12 py-16 md:py-28">
           <div className="grid md:grid-cols-5 gap-8 md:gap-12">
             <h2
               className="text-3xl md:text-4xl text-[#2E2E2E] md:col-span-2"
@@ -131,7 +131,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] w-full px-6 md:px-12 pb-16 md:pb-28">
+        <section className="mx-auto max-w-7xl w-full px-6 md:px-12 pb-16 md:pb-28">
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="rounded-3xl border-0">
               <CardContent className="p-8 space-y-5">
@@ -171,7 +171,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] w-full px-6 md:px-12 pb-16 md:pb-28">
+        <section className="mx-auto max-w-7xl w-full px-6 md:px-12 pb-16 md:pb-28">
           <h2
             className="text-3xl md:text-4xl text-[#2E2E2E] mb-12"
             style={{ fontFamily: "var(--font-heading)" }}
@@ -215,7 +215,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] w-full px-6 md:px-12 pb-16 md:pb-28">
+        <section className="mx-auto max-w-7xl w-full px-6 md:px-12 pb-16 md:pb-28">
           <div className="bg-[#1A1A1A] rounded-[32px] px-6 md:px-16 py-16 md:py-20 text-center">
             <h2
               className="text-3xl md:text-4xl text-white mb-4"

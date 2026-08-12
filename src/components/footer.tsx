@@ -3,7 +3,7 @@ import { SquareDot } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t border-border">
-      <div className="mx-auto max-w-[1280px] w-full px-6 md:px-12 py-12 flex flex-col items-center gap-4">
+      <div className="mx-auto max-w-7xl w-full px-6 md:px-12 py-12 flex flex-col items-center gap-4">
         <div className="flex items-center gap-2">
           <SquareDot className="w-5 h-5 text-secondary" strokeWidth={1.5} />
           <span className="text-lg" style={{ fontFamily: "var(--font-heading)" }}>
