@@ -89,7 +89,7 @@ export default function HomePage() {
                 Jouw tuin, van schets tot bloei
               </h1>
               <p className="text-white/80 text-lg max-w-md leading-relaxed">
-              Teken de omtrek van je tuin, zoek planten en bomen uit de bibliotheek en houd bij
+              Teken de omtrek van je tuin, zoek planten of bomen uit de bibliotheek en houd bij
               wat waar groeit, bloeit en gesnoeid moet worden.
               </p>
               <div className="flex flex-wrap items-center gap-5 pt-2">
@@ -125,7 +125,7 @@ export default function HomePage() {
             </h2>
             <p className="text-muted-foreground leading-relaxed md:col-span-3 text-lg">
               Plot zet je tuin op de kaart, letterlijk. Teken de omtrek, verdeel je tuin in zones
-              en geef elke plant en boom een plek. Zo zie je in één oogopslag wat waar groeit,
+              en geef elke plant of boom een plek. Zo zie je in één oogopslag wat waar groeit,
               bloeit en gesnoeid wil worden.
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function HomePage() {
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Teken je tuin zoals hij er echt uitziet. Maak de omtrek, zet zones neer voor zon
-                  en schaduw en verplaats planten en bomen tot alles klopt.
+                  en schaduw en verplaats planten of bomen tot alles klopt.
                 </p>
               </CardContent>
             </Card>
@@ -163,7 +163,7 @@ export default function HomePage() {
                   Plantenbibliotheek
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Duizenden planten en bomen binnen handbereik. Zoek op naam, bekijk foto&apos;s en
+                  Duizenden planten of bomen binnen handbereik. Zoek op naam, bekijk foto&apos;s en
                   kies wat bij jouw tuin past.
                 </p>
               </CardContent>
@@ -188,7 +188,7 @@ export default function HomePage() {
               {
                 icon: Sprout,
                 title: "Plant",
-                text: "Zoek planten en bomen uit de bibliotheek en zet ze op de juiste plek.",
+                text: "Zoek planten of bomen uit de bibliotheek en zet ze op de juiste plek.",
               },
               {
                 icon: CalendarDays,

@@ -10,7 +10,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Plot",
-  description: "Ontwerp je tuin, plaats planten en bomen, en houd bij wat waar groeit",
+  description: "Ontwerp je tuin, plaats planten of bomen, en houd bij wat waar groeit",
   icons: {
     icon: "/logo.svg",
   }
