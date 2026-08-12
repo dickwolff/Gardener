@@ -76,7 +76,7 @@ function GardenIllustration() {
 export default function HomePage() {
   return (
     <>
-      <Header variant="light" />
+      <Header />
       <main className="flex-1">
         <section className="bg-secondary text-secondary-foreground rounded-b-[80px]">
           <div className="mx-auto max-w-[1280px] w-full px-6 md:px-12 py-20 md:py-28 grid lg:grid-cols-2 gap-14 items-center">
