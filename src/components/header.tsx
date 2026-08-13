@@ -15,7 +15,6 @@ import {
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 
 interface HeaderProps {
@@ -108,100 +107,100 @@ export function Header({ variant = "default" }: HeaderProps) {
         </nav>
 
         {session && (
-          <Drawer open={mobileOpen} onOpenChange={setMobileOpen} swipeDirection="right">
-            <DrawerTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  aria-label="Menu"
-                >
-                  <Menu className="w-5 h-5" />
-                </Button>
-              }
-            />
-            <DrawerContent className="rounded-none rounded-l-xl w-72">
-              <DrawerHeader>
-                <div className="flex items-center justify-between">
-                  <Link
-                    href="/"
-                    onClick={() => setMobileOpen(false)}
-                    className="text-xl tracking-tight flex items-center gap-2"
-                    style={{ fontFamily: "var(--font-heading)" }}
-                  >
-                    <SquareDot className="w-5 h-5 text-primary" strokeWidth={1.5} />
-                    Plot
-                  </Link>
-                  <DrawerClose
-                    render={
-                      <Button variant="ghost" size="icon-sm" aria-label="Sluiten">
-                        <span className="sr-only">Sluiten</span>
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                      </Button>
-                    }
-                  />
-                </div>
-                <DrawerTitle className="sr-only">Navigatiemenu</DrawerTitle>
-                <DrawerDescription className="sr-only">Hoofdnavigatie</DrawerDescription>
-              </DrawerHeader>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-label="Menu"
+            onClick={() => setMobileOpen(true)}
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+        )}
+      </div>
 
-              <div className="flex flex-col gap-1 px-4 py-2" style={{ fontFamily: "var(--font-sans)" }}>
+      {session && (
+        <Drawer open={mobileOpen} onOpenChange={setMobileOpen} swipeDirection="right">
+          <DrawerContent className="rounded-none rounded-l-xl w-72">
+            <DrawerHeader>
+              <div className="flex items-center justify-between">
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+                  className="text-xl tracking-tight flex items-center gap-2"
+                  style={{ fontFamily: "var(--font-heading)" }}
                 >
-                  <Home className="w-4 h-4" />
-                  Home
+                  <SquareDot className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                  Plot
                 </Link>
-                <Link
-                  href="/gardens"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                  Mijn tuinen
-                </Link>
-                <Link
-                  href="/gardens/new"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
-                >
-                  <Plus className="w-4 h-4" />
-                  Nieuwe tuin
-                </Link>
+                <DrawerClose
+                  render={
+                    <Button variant="ghost" size="icon-sm" aria-label="Sluiten">
+                      <span className="sr-only">Sluiten</span>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                      </svg>
+                    </Button>
+                  }
+                />
               </div>
+              <DrawerTitle className="sr-only">Navigatiemenu</DrawerTitle>
+              <DrawerDescription className="sr-only">Hoofdnavigatie</DrawerDescription>
+            </DrawerHeader>
 
-              <div className="mt-auto px-4 pb-6 pt-4 border-t border-border">
-                <div className="flex items-center gap-2 mb-3 px-3">
-                  <Avatar size="sm">
-                    <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
-                    <AvatarFallback>{session.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <p className="text-sm font-bold">
-                    {session.user.name}
-                  </p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    signOut();
-                  }}
-                  className="w-full justify-start gap-3 px-3"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Uitloggen
-                </Button>
+            <div className="flex flex-col gap-1 px-4 py-2" style={{ fontFamily: "var(--font-sans)" }}>
+              <Link
+                href="/"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+              >
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+              <Link
+                href="/gardens"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+              >
+                <LayoutGrid className="w-4 h-4" />
+                Mijn tuinen
+              </Link>
+              <Link
+                href="/gardens/new"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+              >
+                <Plus className="w-4 h-4" />
+                Nieuwe tuin
+              </Link>
+            </div>
+
+            <div className="mt-auto px-4 pb-6 pt-4 border-t border-border">
+              <div className="flex items-center gap-2 mb-3 px-3">
+                <Avatar size="sm">
+                  <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
+                  <AvatarFallback>{session.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <p className="text-sm font-bold">
+                  {session.user.name}
+                </p>
               </div>
-            </DrawerContent>
-          </Drawer>
-        )}
-      </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setMobileOpen(false);
+                  signOut();
+                }}
+                className="w-full justify-start gap-3 px-3"
+              >
+                <LogOut className="w-4 h-4" />
+                Uitloggen
+              </Button>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      )}
     </header>
   );
 }
