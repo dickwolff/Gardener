@@ -89,7 +89,6 @@ export function Header({ variant = "default" }: HeaderProps) {
             </Button>
           </div>
         )}
-        </nav>
       </div>
     </header>
   );
