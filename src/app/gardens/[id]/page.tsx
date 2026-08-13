@@ -52,7 +52,7 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
             >
               Overzicht {garden.name}
             </h1>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link href={`/gardens/${garden.id}/editor`}>
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
                   <PencilRuler className="w-4 h-4" />
