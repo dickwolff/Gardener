@@ -19,6 +19,20 @@ export async function getGardens() {
   });
 }
 
+export async function getGardensPaginated(cursor?: string, limit = 6) {
+  const user = await getCurrentUser();
+  const gardens = await prisma.garden.findMany({
+    where: { userId: user.id },
+    include: { zones: true, plants: true },
+    orderBy: { createdAt: "desc" },
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+  });
+  const hasMore = gardens.length > limit;
+  const items = hasMore ? gardens.slice(0, limit) : gardens;
+  return { items, nextCursor: hasMore ? items[items.length - 1].id : null };
+}
+
 export async function getGarden(id: string) {
   const user = await getCurrentUser();
   const garden = await prisma.garden.findUnique({

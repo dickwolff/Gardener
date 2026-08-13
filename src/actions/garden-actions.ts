@@ -4,6 +4,21 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/data";
 
+export async function getGardensPage(cursor?: string) {
+  const user = await getCurrentUser();
+  const limit = 6;
+  const gardens = await prisma.garden.findMany({
+    where: { userId: user.id },
+    include: { zones: true, plants: true },
+    orderBy: { createdAt: "desc" },
+    take: limit + 1,
+    ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
+  });
+  const hasMore = gardens.length > limit;
+  const items = hasMore ? gardens.slice(0, limit) : gardens;
+  return { items, nextCursor: hasMore ? items[items.length - 1].id : null };
+}
+
 export async function createGarden(formData: FormData) {
   const user = await getCurrentUser();
   const name = formData.get("name") as string;

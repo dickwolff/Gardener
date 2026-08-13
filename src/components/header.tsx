@@ -7,6 +7,7 @@ import { SquareDot, LayoutGrid, Plus, LogOut, Menu, Home } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import {
   Drawer,
   DrawerClose,
@@ -72,9 +73,15 @@ export function Header({ variant = "default" }: HeaderProps) {
                 Nieuwe tuin
               </Link>
               <Separator orientation="vertical" className="h-5" />
-              <span className="text-white font-bold text-sm">
-                {session.user.name}
-              </span>
+              <div className="flex items-center gap-2">
+                <Avatar size="sm">
+                  <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
+                  <AvatarFallback>{session.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <span className="text-white font-bold text-sm">
+                  {session.user.name}
+                </span>
+              </div>
               <Button
                 variant="ghost"
                 size="icon-sm"
@@ -169,9 +176,15 @@ export function Header({ variant = "default" }: HeaderProps) {
               </div>
 
               <div className="mt-auto px-4 pb-6 pt-4 border-t border-border">
-                <p className="text-sm font-bold mb-3 px-3">
-                  {session.user.name}
-                </p>
+                <div className="flex items-center gap-2 mb-3 px-3">
+                  <Avatar size="sm">
+                    <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
+                    <AvatarFallback>{session.user.name?.charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <p className="text-sm font-bold">
+                    {session.user.name}
+                  </p>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"
