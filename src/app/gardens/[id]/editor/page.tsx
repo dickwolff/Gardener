@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { getGarden } from "@/lib/data";
-import { getDefaultUser } from "@/lib/data";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GardenEditor } from "@/components/garden-editor";
@@ -22,7 +21,6 @@ export default async function GardenEditorPage({ params }: GardenEditorPageProps
 
   try {
     garden = await getGarden(id);
-    await getDefaultUser();
   } catch {
     notFound();
   }

@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { SquareDot, LayoutGrid, Plus } from "lucide-react";
+import { SquareDot, LayoutGrid, Plus, LogOut } from "lucide-react";
+import { useSession, signOut } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -8,6 +12,7 @@ interface HeaderProps {
 
 export function Header({ variant = "default" }: HeaderProps) {
   const isLight = variant === "light";
+  const { data: session } = useSession();
 
   return (
     <header
@@ -31,26 +36,54 @@ export function Header({ variant = "default" }: HeaderProps) {
           Plot
         </Link>
         <nav className="hidden md:flex gap-6 text-sm items-center" style={{ fontFamily: "var(--font-sans)" }}>
-          <Link
-            href="/gardens"
-            className={cn(
-              "transition-colors flex items-center gap-1.5",
-              isLight ? "hover:text-secondary" : "hover:text-primary"
-            )}
-          >
-            <LayoutGrid className="w-4 h-4" />
-            Mijn tuinen
-          </Link>
-          <Link
-            href="/gardens/new"
-            className={cn(
-              "transition-colors flex items-center gap-1.5",
-              isLight ? "hover:text-secondary" : "hover:text-primary"
-            )}
-          >
-            <Plus className="w-4 h-4" />
-            Nieuwe tuin
-          </Link>
+          {session ? (
+            <>
+              <Link
+                href="/gardens"
+                className={cn(
+                  "transition-colors flex items-center gap-1.5",
+                  isLight ? "hover:text-secondary" : "hover:text-primary"
+                )}
+              >
+                <LayoutGrid className="w-4 h-4" />
+                Mijn tuinen
+              </Link>
+              <Link
+                href="/gardens/new"
+                className={cn(
+                  "transition-colors flex items-center gap-1.5",
+                  isLight ? "hover:text-secondary" : "hover:text-primary"
+                )}
+              >
+                <Plus className="w-4 h-4" />
+                Nieuwe tuin
+              </Link>
+              <span className="text-muted-foreground">
+                {session.user.name}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => signOut()}
+                className={cn(
+                  "rounded-full",
+                  isLight ? "hover:text-secondary" : "hover:text-primary"
+                )}
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </>
+          ) : (
+            <Link
+              href="/sign-in"
+              className={cn(
+                "transition-colors",
+                isLight ? "hover:text-secondary" : "hover:text-primary"
+              )}
+            >
+              Inloggen
+            </Link>
+          )}
         </nav>
       </div>
     </header>

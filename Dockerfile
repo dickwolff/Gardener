@@ -13,7 +13,6 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
 RUN npx prisma db push
-RUN npx prisma db seed
 RUN npm run build
 
 FROM node:24-trixie-slim AS runner

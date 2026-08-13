@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getDefaultUser } from "@/lib/data";
+import { getCurrentUser } from "@/lib/data";
 
 export async function createGarden(formData: FormData) {
-  const user = await getDefaultUser();
+  const user = await getCurrentUser();
   const name = formData.get("name") as string;
   const width = parseFloat(formData.get("width") as string);
   const height = parseFloat(formData.get("height") as string);
