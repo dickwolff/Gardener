@@ -75,7 +75,7 @@ export function Header({ variant = "default" }: HeaderProps) {
             </>
           ) : (
             <Link
-              href="/sign-in"
+              href="/login"
               className={cn(
                 "transition-colors",
                 isLight ? "hover:text-secondary" : "hover:text-primary"
