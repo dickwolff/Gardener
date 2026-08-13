@@ -24,8 +24,8 @@ export default function SignInPage() {
 
   return (
     <>
-      <Header variant="light" />
-      <main className="flex-1 flex items-center justify-center p-12">
+      <Header />
+      <main className="flex-1 flex items-center justify-center p-12 md:px-24">
         <Card className="rounded-2xl max-w-md w-full border-0 shadow-none">
           <CardContent className="flex flex-col items-center py-12 space-y-8">
             <div className="flex flex-col items-center space-y-3">
