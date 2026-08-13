@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createGarden } from "@/actions/garden-actions";
+import { Loader2 } from "lucide-react";
 
 export function NewGardenForm() {
   const router = useRouter();
@@ -89,9 +90,16 @@ export function NewGardenForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl h-11 w-full"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl h-11 w-full gap-2"
           >
-            {loading ? "Bezig..." : "Tuin aanmaken"}
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Tuin aanmaken
+              </>
+            ) : (
+              "Tuin aanmaken"
+            )}
           </Button>
         </form>
       </CardContent>

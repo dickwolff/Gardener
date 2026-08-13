@@ -57,7 +57,8 @@ export default async function GardensPage() {
                 Begin met het aanmaken van je eerste tuin. Teken de omtrek, voeg zones toe en plaats je planten.
               </p>
               <Link href="/gardens/new">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
+                  <Plus className="w-4 h-4" />
                   Maak je eerste tuin
                 </Button>
               </Link>
