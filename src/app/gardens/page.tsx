@@ -21,7 +21,7 @@ export default async function GardensPage() {
     <>
       <Header />
       <main className="flex-1 mx-auto max-w-7xl w-full p-12">
-        <div className="flex items-center justify-between mb-8 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pt-4">
           <div>
             <h1
               className="text-3xl text-[#2E2E2E]"
