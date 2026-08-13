@@ -78,7 +78,7 @@ export default function HomePage() {
     <>
       <Header />
       <main className="flex-1">
-        <section className="bg-secondary text-secondary-foreground rounded-b-[80px]">
+        <section className="bg-secondary text-secondary-foreground">
           <div className="mx-auto max-w-7xl w-full px-6 md:px-12 py-20 md:py-28 grid lg:grid-cols-2 gap-14 items-center">
             <div className="space-y-6">
               <p className="text-primary text-sm font-medium">Tuinontwerp & beheer</p>

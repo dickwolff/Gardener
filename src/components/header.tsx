@@ -1,11 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { SquareDot, LayoutGrid, Plus, LogOut } from "lucide-react";
+import { SquareDot, LayoutGrid, Plus, LogOut, Menu, Home } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -14,6 +24,7 @@ interface HeaderProps {
 export function Header({ variant = "default" }: HeaderProps) {
   const isLight = variant === "light";
   const { data: session } = useSession();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header
@@ -36,6 +47,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           />
           Plot
         </Link>
+
         <nav className="hidden md:flex items-center gap-6 text-sm" style={{ fontFamily: "var(--font-sans)" }}>
           {session ? (
             <>
@@ -87,6 +99,95 @@ export function Header({ variant = "default" }: HeaderProps) {
             </Link>
           )}
         </nav>
+
+        {session && (
+          <Drawer open={mobileOpen} onOpenChange={setMobileOpen} swipeDirection="right">
+            <DrawerTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="Menu"
+                >
+                  <Menu className="w-5 h-5" />
+                </Button>
+              }
+            />
+            <DrawerContent className="rounded-none rounded-l-xl w-72">
+              <DrawerHeader>
+                <div className="flex items-center justify-between">
+                  <Link
+                    href="/"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-xl tracking-tight flex items-center gap-2"
+                    style={{ fontFamily: "var(--font-heading)" }}
+                  >
+                    <SquareDot className="w-5 h-5 text-primary" strokeWidth={1.5} />
+                    Plot
+                  </Link>
+                  <DrawerClose
+                    render={
+                      <Button variant="ghost" size="icon-sm" aria-label="Sluiten">
+                        <span className="sr-only">Sluiten</span>
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </Button>
+                    }
+                  />
+                </div>
+                <DrawerTitle className="sr-only">Navigatiemenu</DrawerTitle>
+                <DrawerDescription className="sr-only">Hoofdnavigatie</DrawerDescription>
+              </DrawerHeader>
+
+              <div className="flex flex-col gap-1 px-4 py-2" style={{ fontFamily: "var(--font-sans)" }}>
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+                >
+                  <Home className="w-4 h-4" />
+                  Home
+                </Link>
+                <Link
+                  href="/gardens"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  Mijn tuinen
+                </Link>
+                <Link
+                  href="/gardens/new"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+                >
+                  <Plus className="w-4 h-4" />
+                  Nieuwe tuin
+                </Link>
+              </div>
+
+              <div className="mt-auto px-4 pb-6 pt-4 border-t border-border">
+                <p className="text-sm font-bold mb-3 px-3">
+                  {session.user.name}
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    signOut();
+                  }}
+                  className="w-full justify-start gap-3 px-3"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Uitloggen
+                </Button>
+              </div>
+            </DrawerContent>
+          </Drawer>
+        )}
       </div>
     </header>
   );
