@@ -14,7 +14,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { deleteGarden } from "@/actions/garden-actions";
-import { Trash2 } from "lucide-react";
+import { Trash2, X, Loader2 } from "lucide-react";
 
 interface DeleteGardenButtonProps {
   gardenId: string;
@@ -63,18 +63,20 @@ export function DeleteGardenButton({ gardenId, variant = "default" }: DeleteGard
         <DialogFooter>
           <DialogClose
             render={
-              <Button variant="outline" className="rounded-xl">
-                Annuleren
+              <Button variant="outline" size="icon-sm" className="rounded-full" aria-label="Annuleren">
+                <X className="w-4 h-4" />
               </Button>
             }
           />
           <Button
             variant="destructive"
-            className="rounded-xl"
+            size="icon-sm"
+            className="rounded-full"
             onClick={handleDelete}
             disabled={isDeleting}
+            aria-label="Verwijderen"
           >
-            {isDeleting ? "Bezig..." : "Verwijderen"}
+            {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
           </Button>
         </DialogFooter>
       </DialogContent>
