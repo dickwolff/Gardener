@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createGarden } from "@/actions/garden-actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 
 export function NewGardenForm() {
   const router = useRouter();
@@ -98,7 +98,10 @@ export function NewGardenForm() {
                 Tuin aanmaken
               </>
             ) : (
-              "Tuin aanmaken"
+              <>
+                <Plus className="w-4 h-4" />
+                Tuin aanmaken
+              </>
             )}
           </Button>
         </form>

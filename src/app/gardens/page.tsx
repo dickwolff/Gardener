@@ -36,12 +36,14 @@ export default async function GardensPage() {
               Ontwerp, teken en beheer je tuinen.
             </p>
           </div>
-          <Link href="/gardens/new">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
-              <Plus className="w-4 h-4" />
-              Nieuwe tuin
-            </Button>
-          </Link>
+          {gardens.length > 0 && (
+            <Link href="/gardens/new">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl gap-2">
+                <Plus className="w-4 h-4" />
+                Nieuwe tuin
+              </Button>
+            </Link>
+          )}
         </div>
 
         {gardens.length === 0 ? (
