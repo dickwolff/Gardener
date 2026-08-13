@@ -35,7 +35,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           />
           Plot
         </Link>
-        <nav className="hidden md:flex gap-6 text-sm items-center" style={{ fontFamily: "var(--font-sans)" }}>
+        <nav className="hidden md:flex gap-6 text-sm items-center flex-1" style={{ fontFamily: "var(--font-sans)" }}>
           {session ? (
             <>
               <Link
@@ -58,20 +58,6 @@ export function Header({ variant = "default" }: HeaderProps) {
                 <Plus className="w-4 h-4" />
                 Nieuwe tuin
               </Link>
-              <span className="text-muted-foreground">
-                {session.user.name}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => signOut()}
-                className={cn(
-                  "rounded-full",
-                  isLight ? "hover:text-secondary" : "hover:text-primary"
-                )}
-              >
-                <LogOut className="w-4 h-4" />
-              </Button>
             </>
           ) : (
             <Link
@@ -84,6 +70,25 @@ export function Header({ variant = "default" }: HeaderProps) {
               Inloggen
             </Link>
           )}
+        </nav>
+        {session && (
+          <div className="hidden md:flex items-center gap-4">
+            <span className="text-white font-bold text-sm">
+              {session.user.name}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => signOut()}
+              className={cn(
+                "rounded-full",
+                isLight ? "hover:text-secondary" : "hover:text-primary"
+              )}
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
         </nav>
       </div>
     </header>
