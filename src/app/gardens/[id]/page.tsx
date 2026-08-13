@@ -45,7 +45,7 @@ export default async function OverviewPage({ params }: OverviewPageProps) {
             <ChevronLeft className="w-4 h-4" />
             Terug naar mijn tuinen
           </Link>
-          <div className="flex items-center justify-between mt-1">
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-1">
             <h1
                className="text-3xl text-[#2E2E2E]"
               style={{ fontFamily: "var(--font-heading)", fontWeight: 400 }}
