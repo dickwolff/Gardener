@@ -9,7 +9,6 @@ RUN npm ci
 FROM node:24-trixie-slim AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV DATABASE_URL="file:./prisma/dev.db"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npx prisma generate
@@ -24,17 +23,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 ENV NODE_OPTIONS="--no-node-snapshot"
-ENV DATABASE_URL="file:/app/data/dev.db"
 
 RUN groupadd --system --gid 1001 nodejs \
-    && useradd --system --uid 1001 nextjs \
-    && mkdir -p /app/data \
-    && chown nextjs:nodejs /app/data
+    && useradd --system --uid 1001 nextjs
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/prisma/dev.db /app/data/dev.db
 
 USER nextjs
 EXPOSE 3000
