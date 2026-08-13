@@ -18,7 +18,7 @@ export async function createGarden(formData: FormData) {
     data: { name, width, height, userId: user.id },
   });
 
-  revalidatePath("/");
+  revalidatePath("/gardens");
   return { success: true, data: garden };
 }
 
@@ -33,7 +33,7 @@ export async function updateGarden(id: string, data: { name?: string }) {
 
 export async function deleteGarden(id: string) {
   await prisma.garden.delete({ where: { id } });
-  revalidatePath("/");
+  revalidatePath("/gardens");
   return { success: true };
 }
 
