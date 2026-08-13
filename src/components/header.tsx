@@ -121,8 +121,8 @@ export function Header({ variant = "default" }: HeaderProps) {
                 </Button>
               }
             />
-            <DrawerContent className="rounded-none rounded-l-xl w-72">
-              <DrawerHeader>
+            <DrawerContent className="rounded-none rounded-l-xl w-72 h-dvh max-h-dvh">
+              <DrawerHeader className="shrink-0">
                 <div className="flex items-center justify-between">
                   <Link
                     href="/"
@@ -148,7 +148,7 @@ export function Header({ variant = "default" }: HeaderProps) {
                 <DrawerDescription className="sr-only">Hoofdnavigatie</DrawerDescription>
               </DrawerHeader>
 
-              <div className="flex flex-col gap-1 px-4 py-2" style={{ fontFamily: "var(--font-sans)" }}>
+              <div className="flex-1 overflow-y-auto px-4 py-2" style={{ fontFamily: "var(--font-sans)" }}>
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
@@ -175,7 +175,7 @@ export function Header({ variant = "default" }: HeaderProps) {
                 </Link>
               </div>
 
-              <div className="mt-auto px-4 pb-6 pt-4 border-t border-border">
+              <div className="shrink-0 px-4 pb-6 pt-4 border-t border-border">
                 <div className="flex items-center gap-2 mb-3 px-3">
                   <Avatar size="sm">
                     <AvatarImage src={session.user.image ?? undefined} alt={session.user.name} />
