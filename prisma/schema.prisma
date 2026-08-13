@@ -18,8 +18,6 @@ model User {
   image         String?
   sessions      Session[]
   accounts      Account[]
-
-  @@map("user")
 }
 
 model Garden {
@@ -86,7 +84,6 @@ model Session {
 
   @@unique([token])
   @@index([userId])
-  @@map("session")
 }
 
 model Account {
@@ -106,7 +103,6 @@ model Account {
   updatedAt             DateTime  @updatedAt
 
   @@index([userId])
-  @@map("account")
 }
 
 model Verification {
@@ -118,5 +114,4 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
-  @@map("verification")
 }
