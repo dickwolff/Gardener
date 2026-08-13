@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { SquareDot, LayoutGrid, Plus, LogOut } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -35,7 +36,7 @@ export function Header({ variant = "default" }: HeaderProps) {
           />
           Plot
         </Link>
-        <nav className="hidden md:flex gap-6 text-sm items-center flex-1" style={{ fontFamily: "var(--font-sans)" }}>
+        <nav className="hidden md:flex items-center gap-6 text-sm" style={{ fontFamily: "var(--font-sans)" }}>
           {session ? (
             <>
               <Link
@@ -58,6 +59,21 @@ export function Header({ variant = "default" }: HeaderProps) {
                 <Plus className="w-4 h-4" />
                 Nieuwe tuin
               </Link>
+              <Separator orientation="vertical" className="h-5" />
+              <span className="text-white font-bold text-sm">
+                {session.user.name}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => signOut()}
+                className={cn(
+                  "rounded-full",
+                  isLight ? "hover:text-secondary" : "hover:text-primary"
+                )}
+              >
+                <LogOut className="w-4 h-4" />
+              </Button>
             </>
           ) : (
             <Link
@@ -71,24 +87,6 @@ export function Header({ variant = "default" }: HeaderProps) {
             </Link>
           )}
         </nav>
-        {session && (
-          <div className="hidden md:flex items-center gap-4">
-            <span className="text-white font-bold text-sm">
-              {session.user.name}
-            </span>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => signOut()}
-              className={cn(
-                "rounded-full",
-                isLight ? "hover:text-secondary" : "hover:text-primary"
-              )}
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
       </div>
     </header>
   );
